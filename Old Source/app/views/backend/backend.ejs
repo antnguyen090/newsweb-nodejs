@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- header icluder -->
+  <%- include('./elements/header'); -%>
+    
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Preloader -->
+
+  <!-- Navbar -->
+  <%- include('./elements/main-header'); -%>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <%- include('./elements/main-sidebar'); -%>
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+          <div class="container-fluid">
+          <%- body %>
+          </div>
+          <%- include('./elements/modals'); -%>
+    </section>
+
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+<!-- mainfooter -->
+<%- include('./elements/main-footer'); -%>
+<!-- header script -->
+
+<%- include('./elements/footer-script'); -%>
+
+
+</body>
+</html>
