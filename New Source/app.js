@@ -2,9 +2,11 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var logger = require('morgan'); //save erros
 var flash        = require('req-flash');
+var fs = require('fs')
 
+const helmet = require("helmet");
 const { body, validationResult } = require('express-validator');
 const session = require('express-session');
 const dotenv = require("dotenv");
@@ -51,9 +53,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(helmet());
 app.use(session({ secret: '123' }));
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
+
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+app.use(logger('combined', { stream: accessLogStream }))
 
 // Local variable >>> ejs called
 app.locals.systemConfig = systemConfig;

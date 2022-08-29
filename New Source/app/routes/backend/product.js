@@ -102,6 +102,8 @@ router.post('/save/(:id)?', body('name').isLength({ min: 5 }).withMessage('Have 
                       )
                       }),
                      body('ordering').isInt({ min: 0, max: 99}).withMessage('Ordering must be number from 0 to 99'),
+					 body('price').isInt({ min: 0}).withMessage('Price must be number from 0')
+					 ,
                       async function (req, res) {
                             // Finds the validation errors in this request and wraps them in an object with handy functions
                             const errors = validationResult(req);
@@ -186,7 +188,7 @@ router.post('/change-ordering',
 });
 
 router.post('/change-price', 
-		body('ordering').isInt({ min: 0}).withMessage('Price must be number from 0'),
+		body('price').isInt({ min: 0}).withMessage('Price must be number from 0'),
 		async (req, res, next) => {
 								const errors = validationResult(req);
 								if ( !errors.isEmpty()){
