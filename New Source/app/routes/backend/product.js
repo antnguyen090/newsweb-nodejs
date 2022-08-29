@@ -3,17 +3,17 @@ var router = express.Router();
 var mongoose = require('mongoose');
 const { body, validationResult } = require('express-validator');
 
-
+const mainName = "product"
 const systemConfig  = require(__path_configs + 'system');
-const linkIndex		 = '/' + systemConfig.prefixAdmin + '/product/';
-const modelItems  		= require(__path_model + 'product');
-const itemsModel 	= require(__path_schemas + 'product');
+const linkIndex		 = '/' + systemConfig.prefixAdmin + '/' + mainName;
+const modelItems  		= require(__path_model + mainName);
+const itemsModel 	= require(__path_schemas + mainName);
 const notify  		= require(__path_configs + 'notify');
 
 const UtilsHelpers 	= require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
 
-const folderView	 = __path_views + 'backend/pages/product/';
+const folderView	 = __path_views + 'backend/pages/' + mainName +"/";
 const { param } = require('express-validator');
 
 // List items
