@@ -1,5 +1,7 @@
 <%- include('./../../helpers/status'); -%>
-<!-- <%- include('./../../helpers/pagination'); -%> -->
+<%- include('./../../helpers/pagination'); -%>
+<%- include('./../../helpers/highlight'); -%>
+
 <% 
 	const collection = "product";
 	const linkPrefix = "/" + systemConfig.prefixAdmin + `/${collection}/`;
@@ -22,9 +24,9 @@
 		<div class="row justify-content-between">
 			<div class="mb-1">
 				<div class="btn-search">
-					<button type="button" class="btn btn-primary" id="count-items-all">All (<span><%= items.length %></span>)</button>
-					<button type="button" class="btn btn-success" id="count-items-active">Active (<span><%= countItemsActive.length %></span>)</button>
-					<button type="button" class="btn btn-danger"  id="count-items-inactive">Inactive (<span><%= items.length-countItemsActive.length %></span>)</button>
+					<% statusFilter.forEach( (item, index) => { %>
+						<button type="button" class="btn btn-<%= item.class %>" onClick="location.href='<%= linkPrefix %>status/<%= item.value %>'" id="count-items-<%= item.value %>"><%= item.name %> (<span><%= item.count %></span>)</button>
+					<% }) %>
 				</div>
 			</div>
 			
@@ -102,7 +104,7 @@
 						
 						</td>
 						<td class="text-center"><%= index+1 %></td>
-						<td class="text-center" id="name-item-<%= item.id%>"><%= item.name %></td>
+						<td class="text-center" id="name-item-<%= item.id%>"><%- highlightHelper(item.name, keyword) %></td>
 						<td class="text-center position-relative" id="status-item-<%= item.id %>">
 							<%- statusHelper(collection, item.status, item.id)  %>
 						</td>
@@ -133,6 +135,6 @@
 	<div class="card-footer clearfix">
 	</div>
 	<div class="col-lg-12">
-		<!-- <%- paginationHelper(pagination, collection, currentStatus, keyword) %> -->
+		<%- paginationHelper(pagination, collection, currentStatus, keyword) %>
 	</div>
 </div>

@@ -22,7 +22,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
   	let objWhere	 = {};
 	let keyword		 = ParamsHelpers.getParam(req.query, 'keyword', '');
 	let currentStatus= ParamsHelpers.getParam(req.params, 'status', 'all'); 
-	let statusFilter = await UtilsHelpers.createFilterStatus(currentStatus);
+	let statusFilter = await UtilsHelpers.createFilterStatus(currentStatus, "items");
 
 	let pagination 	 = {
 		totalItems		 : 1,

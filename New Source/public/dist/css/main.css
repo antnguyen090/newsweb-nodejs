@@ -1,3 +1,7 @@
 .btn-search > button {
     margin-right: 10px;
 }
+
+.highlight {
+    background-color: yellow;
+}
