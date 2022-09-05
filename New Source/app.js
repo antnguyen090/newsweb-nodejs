@@ -12,8 +12,9 @@ const session = require('express-session');
 const dotenv = require("dotenv");
 const  mongoose = require('mongoose');
 const expressLayouts = require('express-ejs-layouts');
-
 const pathConfig = require('./path');
+const { Dropzone } = require("dropzone");
+
 
 // Define Path
 global.__base           = __dirname + '/';
@@ -59,7 +60,8 @@ app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
 var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
-app.use(logger('combined', { stream: accessLogStream }))
+
+app.use(logger(':method :url :status - :date[web]', { skip: function (req, res) { return res.statusCode < 400 }, stream: accessLogStream }))
 
 // Local variable >>> ejs called
 app.locals.systemConfig = systemConfig;

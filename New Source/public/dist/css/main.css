@@ -5,3 +5,23 @@
 .highlight {
     background-color: yellow;
 }
+
+.form-group.ckeditor .card-body{
+    width: 50%;
+    padding: 0;
+    padding-left: 10px
+}
+
+.note-editor.note-frame.card{
+    width: 66%;
+    padding: 0;
+    margin-left: 6px;
+}
+
+#divImageMediaPreview img{
+    width: 100%;
+}
+
+#ImageMedias {
+    opacity: 1;
+}
