@@ -57,16 +57,24 @@ router.get('(/status/:status)?', async (req, res, next) => {
 })
 
 // access FORM
-router.get('/form/(:id)?', async function (req, res, next) {
+router.get('/form/(:id)?',  function (req, res, next) {
 	let main = {pageTitle: "Items Management",
 	showError: "",
 	showSuccess: "",}
 	if (req.params.id != undefined) {
-        let item = await modelItems.getItemByID(req.params.id)
-        res.render(`${folderView}form`, {
-			main: main,
-			item: item[0],
-        });
+		itemsModel.countDocuments({_id: req.params.id}, async function (err, count){ 
+			if(count>0){
+				let item = await modelItems.getItemByID(req.params.id)
+				//document exists });
+				res.render(`${folderView}form`, {
+					main: main,
+					item: item[0],
+				});
+			} else {
+				req.flash('success', "Error");
+				res.redirect(linkIndex);
+			}
+		});   
     } else {
         res.render(`${folderView}form`, {
 			main: main,

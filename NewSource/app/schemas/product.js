@@ -7,7 +7,6 @@ var schema = new mongoose.Schema({
     status: String,
     ordering: Number,
     price: Number,
-    date: Date,
 },
 { timestamps: true }
 );
