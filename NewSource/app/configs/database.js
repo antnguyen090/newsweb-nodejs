@@ -7,4 +7,6 @@ module.exports = {
     col_sliders: 'slider',
     col_ticket: 'ticket',
     col_product: 'product',
+    col_category: 'category',
+    col_article: 'article',
 };

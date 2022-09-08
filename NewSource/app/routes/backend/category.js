@@ -3,21 +3,17 @@ var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
 
-const mainName = "product"
+const mainName = "category"
 const systemConfig = require(__path_configs + 'system');
 const linkIndex = '/' + systemConfig.prefixAdmin + '/' + mainName;
 const modelItems = require(__path_model + mainName);
 const itemsModel = require(__path_schemas + mainName);
 const notify = require(__path_configs + 'notify');
 
-const ValidateProduct	= require(__path_validates + mainName);
 const UtilsHelpers = require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
 const folderView = __path_views + 'backend/pages/' + mainName + "/";
-const {param} = require('express-validator');
-const FileHelpers = require(__path_helpers + 'file');
-const uploadThumb	 = FileHelpers.upload('thumb', 'product');
-
+const pageTitle = "Category Management"
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
     let inform = req.flash()
@@ -44,7 +40,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
 		.sort({updatedAt: 'desc'})
 		.then((items) => {
 			res.render(`${folderView}list`, {
-				pageTitle: "Items Management",
+				pageTitle: pageTitle,
 				countItemsActive: items.filter(item => item.status === 'active'),
 				items,
 				statusFilter,
@@ -60,7 +56,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
 
 // access FORM
 router.get('/form/(:id)?',  function (req, res, next) {
-	let main = {pageTitle: "Items Management",
+	let main = {pageTitle: pageTitle,
 	showError: "",
 	showSuccess: "",}
 	if (req.params.id != undefined) {
@@ -86,7 +82,6 @@ router.get('/form/(:id)?',  function (req, res, next) {
 
 
 router.post('/save/(:id)?',
-	uploadThumb,
 	body('name').isLength({min: 5})
 		.withMessage('Have 5 letters')
 		.custom(async (val, {req}) => {
@@ -106,21 +101,9 @@ router.post('/save/(:id)?',
 	body('ordering')
 		.isInt({min: 0, max: 99})
 		.withMessage('Ordering must be number from 0 to 99'),
-	body('price')
-		.isInt({min: 0})
-		.withMessage('Price must be number from 0'),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
-	body('thumb').custom((value,{req}) => {
-		const {image_uploaded , image_old} = req.body;
-		if(!image_uploaded && !image_old) {
-			return Promise.reject(notify.ERROR_FILE_EMPTY);
-		}
-		if(!req.file && image_uploaded) {
-				return Promise.reject(notify.ERROR_FILE_EXTENSION);
-		}
-		return true;
-	}),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
+			console.log(req.body)
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
@@ -129,10 +112,9 @@ router.post('/save/(:id)?',
 			let errors = await validationResult(req)
 			console.log(errors)
 			if(!errors.isEmpty()) {
-				let main = {pageTitle: "Product Management",
+				let main = {pageTitle: pageTitle,
 							showError: modelItems.showError(errors.errors),
 							showSuccess: "",}
-				if(req.file != undefined) FileHelpers.remove('public/uploads/product/', req.file.filename); // xóa tấm hình khi form không hợp lệ
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
 							main: main,
@@ -146,30 +128,17 @@ router.post('/save/(:id)?',
 					})
 				}
 				return
-			} else {
-				if(req.file == undefined){ // không có upload lại hình
-					item.thumb = itemData[0].thumb;
-				}else {
-					item.thumb = req.file.filename;
-					if(req.params.id !== undefined){
-						FileHelpers.remove('public/uploads/product/', `${itemData[0].thumb}`);
-					} 
-				}
 			}
 
 			try {
 				if (req.params.id !== undefined) {
-					item["task"] = "edit"
 					let data = await modelItems.editItem(req.params.id, item)
 					req.flash('success', "Edit Item Successfully");
 					res.redirect(linkIndex);
-					console.log("tres1")
 				} else {
-					item["task"] = "add"
 					let data = await modelItems.saveItems(item);
 					req.flash('success', "Add Item Successfully");
 					res.redirect(linkIndex);
-					console.log("tres12")
 				}
 			} catch (error) {
 				console.log(error)

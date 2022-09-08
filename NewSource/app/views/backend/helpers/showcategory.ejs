@@ -1,0 +1,11 @@
+<% 
+
+    showCategory = (collection, id) => {
+        console.log(collection)
+        console.log(id)
+        let result = collection.find(obj => {
+            return obj._id == id
+          }).name
+        return result
+    }
+%>

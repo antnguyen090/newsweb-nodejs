@@ -9,12 +9,13 @@ var schema = new mongoose.Schema({
     price: Number,
     thumb: String,
     editordata: String,
-    task: String
+    categoryId: String,
 },
 { timestamps: true }
 );
 
-module.exports = mongoose.model(databaseConfig.col_product, schema );
+module.exports = mongoose.model(databaseConfig.col_article, schema );
+
 
 
 

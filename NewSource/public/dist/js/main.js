@@ -1,4 +1,6 @@
-$( document ).ready(function() {
+$( document ).ready( async function() {
+    var pathname = window.location.pathname
+    $(`ul.nav-sidebar > li > a[href="${pathname}"]`).addClass('active');
     $("#ImageMedias").change(function () {
         if (typeof (FileReader) != "undefined") {
             var dvPreview = $("#divImageMediaPreview");
@@ -8,7 +10,7 @@ $( document ).ready(function() {
                     var reader = new FileReader();
                     reader.onload = function (e) {
                         var img = $("<img />");
-                        img.attr("style", "width: 80%; padding: 10px");
+                        img.attr("style", "width: 58%;");
                         img.attr("src", e.target.result);
                         dvPreview.append(img);
                     }
@@ -20,7 +22,6 @@ $( document ).ready(function() {
     });
 
 
-    $('#summernote').summernote();
     function ChangeToSlug(text)
         {
             //Đổi chữ hoa thành chữ thường
@@ -219,13 +220,14 @@ $( document ).ready(function() {
     deleteMultiItems = async (link) =>{
         let itemsDelete = [];
         let listItems =''
-        if ($("input[name='cid']").prop("checked", function( i, val ) {}) == false){
+        if ($("input[name='cid']").prop("checked") == false){
             $('#modal-danger .modal-title').text('Warning!')
             $('#modal-danger .modal-body p').text('Please choose items to delete')
             $('#modal-danger button[data-type="confirm"]').css('display', 'none')
         } else {
             let boxChecked = $("input[name='cid']:checkbox:checked")
-        await boxChecked.each((index, value)=>{
+            
+            await boxChecked.each((index, value)=>{
                 let id = $(value).val()
                 itemsDelete.push(id)
                 listItems += `
@@ -283,7 +285,7 @@ $( document ).ready(function() {
         let modalClass = (status == 'active') ? "modal-success" : "modal-danger"
         let itemsChangeStatus = [];
         let listItems =''
-        if ($("input[name='cid']").prop("checked", function( i, val ) {}) == false){
+        if ($("input[name='cid']").prop("checked") == false){
             $(`#${modalClass} .modal-title`).text('Warning!')
             $(`#${modalClass} .modal-body p`).text('Please choose items to change status')
             $(`#${modalClass} button[data-type="confirm"]`).css('display', 'none')

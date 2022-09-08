@@ -3,23 +3,24 @@ var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
 
-const mainName = "product"
+const mainName = "article"
 const systemConfig = require(__path_configs + 'system');
 const linkIndex = '/' + systemConfig.prefixAdmin + '/' + mainName;
 const modelItems = require(__path_model + mainName);
 const itemsModel = require(__path_schemas + mainName);
+const categoryModel = require(__path_schemas + "category");
 const notify = require(__path_configs + 'notify');
 
-const ValidateProduct	= require(__path_validates + mainName);
 const UtilsHelpers = require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
 const folderView = __path_views + 'backend/pages/' + mainName + "/";
 const {param} = require('express-validator');
 const FileHelpers = require(__path_helpers + 'file');
-const uploadThumb	 = FileHelpers.upload('thumb', 'product');
-
+const uploadThumb	 = FileHelpers.upload('thumb', 'article');
+const pageTitle = "Article Management"
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
+	let category = await categoryModel.find({status:"active"})
     let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
@@ -44,12 +45,13 @@ router.get('(/status/:status)?', async (req, res, next) => {
 		.sort({updatedAt: 'desc'})
 		.then((items) => {
 			res.render(`${folderView}list`, {
-				pageTitle: "Items Management",
+				pageTitle: pageTitle,
 				countItemsActive: items.filter(item => item.status === 'active'),
 				items,
 				statusFilter,
 				pagination,
 				currentStatus,
+				category: category,
 				keyword,
 				showError: "",
 				showSuccess: "",
@@ -59,10 +61,13 @@ router.get('(/status/:status)?', async (req, res, next) => {
 })
 
 // access FORM
-router.get('/form/(:id)?',  function (req, res, next) {
-	let main = {pageTitle: "Items Management",
+router.get('/form/(:id)?', async function (req, res, next) {
+	let category = await categoryModel.find({status:"active"})
+	let main = {pageTitle: pageTitle,
 	showError: "",
-	showSuccess: "",}
+	showSuccess: "",
+	categoryList: category,
+	}
 	if (req.params.id != undefined) {
 		itemsModel.countDocuments({_id: req.params.id}, async function (err, count){ 
 			if(count>0){
@@ -106,9 +111,6 @@ router.post('/save/(:id)?',
 	body('ordering')
 		.isInt({min: 0, max: 99})
 		.withMessage('Ordering must be number from 0 to 99'),
-	body('price')
-		.isInt({min: 0})
-		.withMessage('Price must be number from 0'),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
 	body('thumb').custom((value,{req}) => {
 		const {image_uploaded , image_old} = req.body;
@@ -127,12 +129,14 @@ router.post('/save/(:id)?',
 				itemData = await itemsModel.find({_id: req.params.id})
 			}
 			let errors = await validationResult(req)
-			console.log(errors)
 			if(!errors.isEmpty()) {
-				let main = {pageTitle: "Product Management",
+				let category = await categoryModel.find({status:"active"})
+				let main = {pageTitle: pageTitle,
 							showError: modelItems.showError(errors.errors),
-							showSuccess: "",}
-				if(req.file != undefined) FileHelpers.remove('public/uploads/product/', req.file.filename); // xóa tấm hình khi form không hợp lệ
+							showSuccess: "",
+							categoryList: category,
+						}
+				if(req.file != undefined) FileHelpers.remove(`public/uploads/${mainName}/`, req.file.filename); // xóa tấm hình khi form không hợp lệ
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
 							main: main,
@@ -152,7 +156,7 @@ router.post('/save/(:id)?',
 				}else {
 					item.thumb = req.file.filename;
 					if(req.params.id !== undefined){
-						FileHelpers.remove('public/uploads/product/', `${itemData[0].thumb}`);
+						FileHelpers.remove(`public/uploads/${mainName}/`, `${itemData[0].thumb}`);
 					} 
 				}
 			}
@@ -163,13 +167,11 @@ router.post('/save/(:id)?',
 					let data = await modelItems.editItem(req.params.id, item)
 					req.flash('success', "Edit Item Successfully");
 					res.redirect(linkIndex);
-					console.log("tres1")
 				} else {
 					item["task"] = "add"
 					let data = await modelItems.saveItems(item);
 					req.flash('success', "Add Item Successfully");
 					res.redirect(linkIndex);
-					console.log("tres12")
 				}
 			} catch (error) {
 				console.log(error)
@@ -180,7 +182,6 @@ router.post('/save/(:id)?',
 
 // Delete
 router.post('/delete/(:status)?', async (req, res, next) => {
-    console.log(req.params.status)
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
         let data = await modelItems.deleteItemsMulti(arrId);
@@ -196,7 +197,6 @@ router.post('/change-status/(:status)?', async (req, res, next) => {
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
         let status = req.body.status
-        console.log(status)
         let data = await modelItems.changeStatusItemsMulti(arrId, status);
         res.send({success: true})
     } else {

@@ -12,16 +12,17 @@
     padding-left: 10px
 }
 
-.note-editor.note-frame.card{
+.note-editor{
     width: 66%;
     padding: 0;
     margin-left: 6px;
 }
 
-#divImageMediaPreview img{
-    width: 100%;
-}
 
 #ImageMedias {
     opacity: 1;
+}
+
+td > .thumb-product{
+    width: 200px;
 }

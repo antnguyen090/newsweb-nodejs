@@ -2,7 +2,6 @@ var multer  = require('multer');
 var randomstring = require("randomstring");
 const path = require('path');
 const fs    = require('fs'); 
-
 const notify  		= require(__path_configs + 'notify');
 
 let uploadFile = (field, folderDes = 'users', fileNameLength = 10, fileSizeMb = 1, fileExtension = 'jpeg|jpg|png|gif') => {
@@ -11,7 +10,7 @@ let uploadFile = (field, folderDes = 'users', fileNameLength = 10, fileSizeMb = 
 			cb(null, __path_uploads + folderDes + '/')
 		},
 		filename: (req, file, cb) =>  {
-			cb(null,  randomstring.generate(fileNameLength) + path.extname(file.originalname));
+			cb(null,  randomstring.generate(fileNameLength) + Date.now() + path.extname(file.originalname));
 		}
 	});
 
@@ -28,9 +27,11 @@ let uploadFile = (field, folderDes = 'users', fileNameLength = 10, fileSizeMb = 
 	
 			if(mimetype && extname){
 				return cb(null,true);
-			}else {
-				cb(notify.ERROR_FILE_EXTENSION);
-			}			
+			}
+			// else {
+			// 	cb(notify.ERROR_FILE_EXTENSION);
+			// }	
+			return cb(null,false);		
 		}
 	}).single(field);
 

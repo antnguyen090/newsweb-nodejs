@@ -1,4 +1,4 @@
-const itemsModel 	= require(__path_schemas + 'product');
+const itemsModel 	= require(__path_schemas + 'category');
 
 module.exports = {
     saveItems: async (params) =>{
