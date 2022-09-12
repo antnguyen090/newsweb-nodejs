@@ -1,8 +1,7 @@
 <% 
 
     showCategory = (collection, id) => {
-        console.log(collection)
-        console.log(id)
+        if (collection == null) return
         let result = collection.find(obj => {
             return obj._id == id
           }).name

@@ -20,7 +20,7 @@ const uploadThumb	 = FileHelpers.upload('thumb', 'article');
 const pageTitle = "Article Management"
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
-	let category = await categoryModel.find({status:"active"})
+	let category = await categoryModel.find()
     let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
@@ -38,6 +38,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
     await itemsModel.count(objWhere).then((data) => {
         pagination.totalItems = data;
     });
+
     itemsModel
 		.find(objWhere)
 		.skip((pagination.currentPage-1) * pagination.totalItemsPerPage)
@@ -47,7 +48,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
 			res.render(`${folderView}list`, {
 				pageTitle: pageTitle,
 				countItemsActive: items.filter(item => item.status === 'active'),
-				items,
+				items: items,
 				statusFilter,
 				pagination,
 				currentStatus,
@@ -62,6 +63,8 @@ router.get('(/status/:status)?', async (req, res, next) => {
 
 // access FORM
 router.get('/form/(:id)?', async function (req, res, next) {
+	let dataa = await categoryModel.find().populate('articles')
+	console.log(dataa)
 	let category = await categoryModel.find({status:"active"})
 	let main = {pageTitle: pageTitle,
 	showError: "",
@@ -163,13 +166,12 @@ router.post('/save/(:id)?',
 
 			try {
 				if (req.params.id !== undefined) {
-					item["task"] = "edit"
-					let data = await modelItems.editItem(req.params.id, item)
+					await categoryModel.editItem(req.params.id, item)
 					req.flash('success', "Edit Item Successfully");
 					res.redirect(linkIndex);
 				} else {
-					item["task"] = "add"
-					let data = await modelItems.saveItems(item);
+					item.category = req.body.categoryId
+					let data = await modelItems.saveItems(item)
 					req.flash('success', "Add Item Successfully");
 					res.redirect(linkIndex);
 				}

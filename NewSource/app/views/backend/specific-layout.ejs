@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- header icluder -->
+  <%- include('./elements/elementsFrontEnd/header'); -%>
+</head>
+<body>
+    <!-- Topbar Start -->
+    <%- include('../backend/elements/elementsFrontEnd/topbar'); -%>
+    <!-- Topbar End -->
+
+    <!-- Navbar Start -->
+    <%- include('../backend/elements/elementsFrontEnd/navbar'); -%>
+    <!-- Navbar End -->
+    
+    <%- body %>
+    
+    <!-- Footer Start -->
+    <%- include('./elements/elementsFrontEnd/mainfooter'); -%>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary btn-square back-to-top"><i class="fa fa-arrow-up"></i></a>
+    <!-- JavaScript Libraries -->
+    <%- include('./elements/elementsFrontEnd/footerscript'); -%>
+
+</body>
+
+</html>

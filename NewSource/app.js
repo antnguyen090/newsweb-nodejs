@@ -64,13 +64,24 @@ app.use(logger(':method :url :status - :date[web]', { skip: function (req, res) 
 
 // Local variable >>> ejs called
 app.locals.systemConfig = systemConfig;
-
 // Setup router
-app.use(`/${systemConfig.prefixAdmin}`, require(__path_routers + 'backend/index'));
 app.use('/', require(__path_routers + 'frontend/index'));
-
+app.use(`/${systemConfig.prefixAdmin}`, require(__path_routers + 'backend/index'));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+  if (req.url == '/') {
+    res.redirect("/index")
+    return;
+   } else if(req.url == `/${app.locals.systemConfig.prefixAdmin}`){
+    res.redirect(`${app.locals.systemConfig.prefixAdmin}/dashboard`)
+    return;
+   } else if(req.url == `/${app.locals.systemConfig.prefixAdmin}/`){
+    res.redirect(`dashboard`)
+    return;
+   } else {
+    res.redirect("/index")
+    return;
+   }
   next(createError(404));
 });
 
