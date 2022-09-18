@@ -1,0 +1,37 @@
+<%
+    const parentMenu = "parentmenu"
+    menuHelper = (menu) =>{
+        function hadChild(id) {
+            return menu.some(function(el) {
+              return el.parentMenu === id;
+            }); 
+        }
+        function callSubMenu(submenu) {
+            let html = ""
+            submenu.forEach((item)=>{
+                html+= `<a href="${item.slug}" class="dropdown-item">${item.name}</a>`
+            })
+            return html
+        }
+        let html =""
+        menu.forEach( (item, index)=>{
+            if (item.parentMenu == parentMenu && hadChild(item.id)){
+                let subMenu =  menu.filter(function(value){
+                    if (value.parentMenu == item.id){
+                        return true;
+                    }
+                });
+                html += `
+                    <div class="nav-item dropdown">
+                        <a href="${item.slug}" class="nav-link dropdown-toggle" data-toggle="dropdown">${item.name}</a>
+                        <div class="dropdown-menu rounded-0 m-0" id="sub-${item.id}">
+                            ${callSubMenu(subMenu)}
+                        </div>
+                     </div>`
+            } else if((item.parentMenu == parentMenu) && (hadChild(item.id) == false)){
+                html += `<a href="${item.slug}" class="nav-item nav-link">${item.name}</a>`
+            } 
+        })
+        return html
+    }
+%>
