@@ -191,18 +191,16 @@ router.post('/change-ordering',
 		res.send({success: true})
 });
 
-router.post('/change-price', 
-	body('price')
-		.isInt({min: 0})
-		.withMessage('Price must be number from 0'), 
+router.post('/changeparentmenu', 
 	async (req, res, next) => {
+		console.log(req.body)
 		const errors = validationResult(req);
 		if (! errors.isEmpty()) {
 			res.send({success: false, errors: errors})
 			return
 		}
-		let {price, id} = req.body
-		let changeStatus = await modelMenuBar.changePrice(id, price)
+		let {newParent, id} = req.body
+		let changeStatus = await modelMenuBar.changeParent(id, newParent)
 		res.send({success: true})
 });
 

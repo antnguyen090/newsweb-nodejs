@@ -28,7 +28,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
     let statusFilter = await UtilsHelpers.createFilterStatus(currentStatus, mainName);
     let pagination = {
         totalItems: 1,
-        totalItemsPerPage: 3,
+        totalItemsPerPage: 10,
         currentPage: parseInt(ParamsHelpers.getParam(req.query, 'page', 1)),
         pageRanges: 3
     };

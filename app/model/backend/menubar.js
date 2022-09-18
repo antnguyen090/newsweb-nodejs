@@ -69,8 +69,8 @@ module.exports = {
         let data = await schemaMenuBar.updateOne({_id: id}, item)
         return
     },
-    changePrice: async (id, price) =>{
-        let data = await schemaMenuBar.updateOne({_id: id}, {price: price})
+    changeParent: async (id, newParent) =>{
+        let data = await schemaMenuBar.updateOne({_id: id}, {parentMenu: newParent})
         return
     },
 }

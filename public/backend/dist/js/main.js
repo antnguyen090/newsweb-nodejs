@@ -1,4 +1,5 @@
 $( document ).ready( async function() {
+    const linkAdmin = "adminTTT/"
     var pathname = window.location.pathname
     $(`ul.nav-sidebar > li > a[href="${pathname}"]`).addClass('active');
     $("#ImageMedias").change(function () {
@@ -220,7 +221,14 @@ $( document ).ready( async function() {
     deleteMultiItems = async (link) =>{
         let itemsDelete = [];
         let listItems =''
-        if ($("input[name='cid']").prop("checked") == false){
+        let compare = new Boolean(false);
+        $( "input[type='checkbox']" ).prop( "checked", function( i, val ) {
+            if(val == true) 
+            {
+                compare = val
+            } 
+        });
+        if (compare == false){
             $('#modal-danger .modal-title').text('Warning!')
             $('#modal-danger .modal-body p').text('Please choose items to delete')
             $('#modal-danger button[data-type="confirm"]').css('display', 'none')
@@ -285,7 +293,14 @@ $( document ).ready( async function() {
         let modalClass = (status == 'active') ? "modal-success" : "modal-danger"
         let itemsChangeStatus = [];
         let listItems =''
-        if ($("input[name='cid']").prop("checked") == false){
+        let compare = new Boolean(false);
+        $( "input[name='cid']" ).prop( "checked", function( i, val ) {
+            if(val == true) 
+            {
+                compare = val
+            } 
+        });
+        if (compare == false){
             $(`#${modalClass} .modal-title`).text('Warning!')
             $(`#${modalClass} .modal-body p`).text('Please choose items to change status')
             $(`#${modalClass} button[data-type="confirm"]`).css('display', 'none')
@@ -317,5 +332,24 @@ $( document ).ready( async function() {
         inputNameForm.on("change paste keyup", function() {
             inputSlugForm.val(ChangeToSlug($(this).val())); 
         });
+
+    
+    $( "select[name='parentMenu']" ).change(function (value) {
+        let id = value.target.getAttribute('data-id')
+        let newParent = $(this).find(":selected").val()
+        $.ajax({
+            type: "post",
+            url: `menubar/changeparentmenu`,
+            data: `id=${id}&newParent=${newParent}`,
+            dataType: "json",
+            success: function (response) {
+                if(response.success == true){
+                    $(`#parentMenu-${id}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"right"});
+                } else {
+                    $(`#parentMenu-${id}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, elementPosition:"right"});
+                }
+            }
+        });
+    })
 });
 

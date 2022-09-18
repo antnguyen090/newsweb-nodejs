@@ -108,7 +108,7 @@
 						<td class="text-center" id="name-item-<%= item.id%>"><%- highlightHelper(item.name, keyword) %></td>
 						<td class="text-center position-relative" >
 							<!-- <input type="number" id="submenu-item-<%= item.id%>" name="parentMenu" value="<%= item.parentMenu %>" class="text-center ordering"> -->
-							<select id="parentMenu" name="parentMenu" class="custom-select custom-select-sm">
+							<select id="parentMenu-<%= item.id %>" data-id="<%= item.id %>" name="parentMenu" class="custom-select custom-select-sm">
 								<option value="parentmenu">Parent Menu</option>
 								<% parentMenuList.forEach( (parent, index) => { %>
 									<% if(parent.id == item.parentMenu){ %>
