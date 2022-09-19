@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-router.use('/', require('./dashboard'));
 router.use('/dashboard', require('./dashboard'));
 router.use('/sliders', require('./sliders'));
 router.use('/category', require('./category'));
