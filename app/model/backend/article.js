@@ -74,8 +74,8 @@ module.exports = {
         let data = await schemaArticle.updateOne({_id: id}, item)
         return
     },
-    changePrice: async (id, price) =>{
-        let data = await schemaArticle.updateOne({_id: id}, {price: price})
+    changeOption: async (id, field, isCheck) =>{
+        let data = await schemaArticle.updateOne({_id: id}, {[field]: isCheck})
         return
     },
 }

@@ -2,21 +2,23 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
-const notify = require(__path_configs + 'notify');
 
-const mainName = "menubar"
-const pageTitle = `Menu Bar Management`
-const folderView = __path_views_backend + `/pages/${mainName}/`;
+const mainName = "rss"
+const pageTitle = `RSS Management`
 const systemConfig = require(__path_configs + 'system');
 const linkIndex = '/' + systemConfig.prefixAdmin + '/' + mainName;
-const modelMenuBar = require(__path_model_backend + mainName);
-const schemaMenuBar = require(__path_schemas_backend + mainName);
+const modelRSS = require(__path_model_backend + mainName);
+const schemaRSS = require(__path_schemas_backend + mainName);
+const notify = require(__path_configs + 'notify');
 
+const ValidateProduct	= require(__path_validates_backend + mainName);
 const UtilsHelpers = require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
+const folderView = __path_views_backend + `/pages/${mainName}/`;
+const FileHelpers = require(__path_helpers + 'file');
+const uploadThumb	 = FileHelpers.upload('thumb', `${mainName}`);
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
-	let parentMenuList = await schemaMenuBar.find({parentMenu : "parentmenu"})
     let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
@@ -31,14 +33,15 @@ router.get('(/status/:status)?', async (req, res, next) => {
 
     if (currentStatus !== 'all') objWhere.status = currentStatus;
     if (keyword !== '') objWhere.name = new RegExp(keyword, 'i');
-    await schemaMenuBar.count(objWhere).then((data) => {
+    await schemaRSS.count(objWhere).then((data) => {
         pagination.totalItems = data;
     });
-			let data = await modelMenuBar.listItems(objWhere, 
+			let data = await modelRSS.listItems(objWhere, 
 				pagination.currentPage,
 				pagination.totalItemsPerPage,
 				{updatedAt: 'desc'},
 				)
+
 			res.render(`${folderView}list`, {
 				pageTitle: pageTitle,
 				countItemsActive: data.filter(item => item.status === 'active'),
@@ -49,22 +52,19 @@ router.get('(/status/:status)?', async (req, res, next) => {
 				keyword,
 				showError: "",
 				showSuccess: "",
-				inform: modelMenuBar.showSuccess(inform.success),
-				parentMenuList,
+				inform: modelRSS.showSuccess(inform.success)
 			})
 })
 
 // access FORM
-router.get('/form/(:id)?',  async function (req, res, next) {
-	let parentMenuList = await schemaMenuBar.find({parentMenu : "parentmenu"})
+router.get('/form/(:id)?',  function (req, res, next) {
 	let main = {pageTitle: pageTitle,
 	showError: "",
-	showSuccess: "",
-	parentMenuList,}
+	showSuccess: "",}
 	if (req.params.id != undefined) {
-		schemaMenuBar.countDocuments({_id: req.params.id}, async function (err, count){ 
+		schemaRSS.countDocuments({_id: req.params.id}, async function (err, count){ 
 			if(count>0){
-				let item = await modelMenuBar.getItemByID(req.params.id)
+				let item = await modelRSS.getItemByID(req.params.id)
 				//document exists });
 				res.render(`${folderView}form`, {
 					main: main,
@@ -84,11 +84,11 @@ router.get('/form/(:id)?',  async function (req, res, next) {
 
 
 router.post('/save/(:id)?',
-	body('name').isLength({min: 1})
-		.withMessage('Have 1 letters')
+	body('name').isLength({min: 5})
+		.withMessage('Have 5 letters')
 		.custom(async (val, {req}) => {
 			let paramId = await(req.params.id != undefined) ? req.params.id : 0
-			return await schemaMenuBar.find({name: val}).then(async user => {
+			return await schemaRSS.find({name: val}).then(async user => {
 				let length = user.length
 				user.forEach((value, index) => {
 					if (value.id == paramId) 
@@ -105,15 +105,17 @@ router.post('/save/(:id)?',
 		.withMessage('Ordering must be number from 0 to 99'),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
+			console.log(req.body)
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
-				itemData = await schemaMenuBar.find({_id: req.params.id})
+				itemData = await schemaRSS.find({_id: req.params.id})
 			}
 			let errors = await validationResult(req)
+			console.log(errors)
 			if(!errors.isEmpty()) {
 				let main = {pageTitle: pageTitle,
-							showError: modelMenuBar.showError(errors.errors),
+							showError: modelRSS.showError(errors.errors),
 							showSuccess: "",}
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
@@ -132,11 +134,11 @@ router.post('/save/(:id)?',
 
 			try {
 				if (req.params.id !== undefined) {
-					let data = await modelMenuBar.editItem(req.params.id, item)
+					let data = await modelRSS.editItem(req.params.id, item)
 					req.flash('success', "Edit Item Successfully");
 					res.redirect(linkIndex);
 				} else {
-					let data = await modelMenuBar.saveItems(item);
+					let data = await modelRSS.saveItems(item);
 					req.flash('success', "Add Item Successfully");
 					res.redirect(linkIndex);
 				}
@@ -152,11 +154,11 @@ router.post('/delete/(:status)?', async (req, res, next) => {
     console.log(req.params.status)
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
-        let data = await modelMenuBar.deleteItemsMulti(arrId);
+        let data = await modelRSS.deleteItemsMulti(arrId);
         res.send({success: true})
     } else {
         let id = req.body.id
-        let data = await modelMenuBar.deleteItem(id);
+        let data = await modelRSS.deleteItem(id);
         res.send({success: true})
     }
 });
@@ -166,12 +168,12 @@ router.post('/change-status/(:status)?', async (req, res, next) => {
         let arrId = req.body.id.split(",")
         let status = req.body.status
         console.log(status)
-        let data = await modelMenuBar.changeStatusItemsMulti(arrId, status);
+        let data = await modelRSS.changeStatusItemsMulti(arrId, status);
         res.send({success: true})
     } else {
         let {status, id} = req.body
         status = (status == 'active') ? 'inactive' : 'active'
-        let changeStatus = await modelMenuBar.changeStatus(id, status)
+        let changeStatus = await modelRSS.changeStatus(id, status)
         res.send({success: true})
     }
 });
@@ -187,19 +189,22 @@ router.post('/change-ordering',
 			return
 		}
 		let {ordering, id} = req.body
-		let changeStatus = await modelMenuBar.changeOrdering(id, ordering)
+		let changeStatus = await modelRSS.changeOrdering(id, ordering)
 		res.send({success: true})
 });
 
-router.post('/changeparentmenu', 
+router.post('/change-price', 
+	body('price')
+		.isInt({min: 0})
+		.withMessage('Price must be number from 0'), 
 	async (req, res, next) => {
 		const errors = validationResult(req);
 		if (! errors.isEmpty()) {
 			res.send({success: false, errors: errors})
 			return
 		}
-		let {newParent, id} = req.body
-		let changeStatus = await modelMenuBar.changeParent(id, newParent)
+		let {price, id} = req.body
+		let changeStatus = await modelRSS.changePrice(id, price)
 		res.send({success: true})
 });
 

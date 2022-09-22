@@ -1,10 +1,14 @@
 <% 
 
     showCategory = (collection, id) => {
-        if (collection == null) return
-        let result = collection.find(obj => {
-            return obj._id == id
-          }).name
-        return result
+        if (collection.length == 0) {
+            return `Null`;
+        } else {
+            let result = collection.find(obj => {
+                return obj._id == id
+              })
+            return result.name
+        }
     }
+    
 %>

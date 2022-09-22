@@ -90,7 +90,6 @@
 						<th class="text-center">#</a></th>
 						<th class="text-center">Name</a></th>
 						<th class="text-center">Thumb</a></th>
-						<th class="text-center">Slug</a></th>
 						<th class="text-center">Status</a></th>
 						<th class="text-center">Ordering</a></th>
 						<th class="text-center">Price</a></th>
@@ -112,7 +111,6 @@
 						<td class="text-center" id="thumb-item-<%= item.id%>">
 							<img class="thumb-product" src="<%= linkThumb %><%= item.thumb%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
 						</td>
-						<td class="text-center" id="slug-item-<%= item.id%>"><%= item.slug %></td>
 						<td class="text-center position-relative" id="status-item-<%= item.id %>">
 							<%- statusHelper(collection, item.status, item.id)  %>
 						</td>

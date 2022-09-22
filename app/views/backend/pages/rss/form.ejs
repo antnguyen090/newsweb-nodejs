@@ -1,16 +1,12 @@
-<%- include('./../../helpers/showCategoryForm'); -%>
-<%- include('./../../helpers/showoptionbox'); -%>
-
-
 <% 
-	const collection = "article";
+	const collection = "rss";
 	const linkPrefix = "/" + systemConfig.prefixAdmin + `/${collection}/`;
 	const linkThumb = "/" + "uploads" + `/${collection}/`;
 %>
 
 <%- main.showError %>
 <div class="card card-info card-outline">
-    <form action="<%= linkPrefix %>save/<%= item.id %>" method="POST" class="mb-0" enctype="multipart/form-data">
+    <form action="<%= linkPrefix %>save/<%= item.id %>" method="POST" class="mb-0">
         <div class="card-body">
             <%= main.pageTitle %>
             <div class="form-group row">
@@ -19,11 +15,22 @@
                     <input type="text" id="name-input-form" name="name" value="<%= item.name %>" class="form-control form-control-sm"></div>
                 </div>
                 <div class="form-group row">
-                    <label for="categoryId" class="col-sm-2 col-form-label text-sm-right required">Category</label>
+                    <label for="source" class="col-sm-2 col-form-label text-sm-right">Source</label>
                     <div class="col-xs-12 col-sm-8">
-                        <select name="categoryId" id="input-category" class="form-control form-control-sm">
-                            <%- showCategoryList(main.categoryList) %>
+                        <select id="source" name="source" class="custom-select custom-select-sm">
+                            <option value="novalue">Choose Source</option>
+                            <option value="vnexpress">VnExpress</option>
+                            <option value="tuoitre">Báo Tuổi Trẻ</option>
                         </select>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="link" class="col-sm-2 col-form-label text-sm-right">Enter an URL:</label>
+                    <div class="col-xs-12 col-sm-8">
+                        <input type="url" name="link" id="url"
+                        placeholder="https://example.com"
+                        pattern="https://.*" size="30" class="form-control form-control-sm"
+                        required>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -48,38 +55,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="option" class="col-sm-2 col-form-label text-sm-right required">Option</label>
-                                <div class="col-xs-12 col-sm-8">
-									<%- showOptionBox(item.id, item.slider, item.toppost, item.breakingnews, item.fearture)  %>
-                                </div>
-                            </div>
-                            <div class="form-group row uploadImage">
-                                <label for="thumb" class="col-sm-2 col-form-label text-sm-right">Upload Image</label>
-                                <div class="col-xs-12 col-sm-8">
-									<input id="ImageMedias" name="thumb" type="file" class="custom-file-input">
-									<div id="divImageMediaPreview">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group row ckeditor">
-                                <label for="uploaded" class="col-sm-2 col-form-label text-sm-right">Image Uploaded</label>
-                            <% if (item.thumb != undefined) { %>
-                                <img style="width: 40%; padding: 10px" src="<%= linkThumb %><%= item.thumb%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
-                                <%}  %>
-                            </div>
-                            <div class="form-group row ckeditor">
-                                <label for="description" class="col-sm-2 col-form-label text-sm-right">Description</label>
-                                <textarea id="summernote" name="editordata">
-                                </textarea>
-                            </div>
 
                         </div>
                         <div class="card-footer">
                             <div class="col-12 col-sm-8 offset-sm-2">
-                                <input class="form-control" name="id" value="" type="hidden">
-                                <input name="image_old" value="<%= item.thumb%>" type="hidden">
-				                <input name="image_uploaded" value="" type="hidden" id="image_uploaded">
                                     <button type="submit" class="btn btn-sm btn-success mr-1">
                                         Submit</button>
                                     <a href="<%= linkPrefix %>" class="btn btn-sm btn-danger mr-1">
@@ -96,7 +75,7 @@
 <!-- Summernote -->
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>        
 <script>
-        var editorData = `<%- item.editordata %>`;
+        var editorData = '<%- item.editordata %>';
         $('#summernote').summernote('code', editorData);
         ImageMedias.onchange = evt => {
 			const [file] = ImageMedias.files
@@ -107,5 +86,3 @@
             }
 		}
 </script>
-
-

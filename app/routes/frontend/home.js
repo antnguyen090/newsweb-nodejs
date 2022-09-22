@@ -9,16 +9,24 @@ const folderView = __path_views_frontend + `pages/${mainName}/`;
 const systemConfig  = require(__path_configs + 'system');
 const notify  		= require(__path_configs + 'notify');
 const schemaMenuBar = require(__path_schemas_backend + 'menubar');
-const schemaSliders = require(__path_schemas_backend + 'sliders');
+const schemaArticle = require(__path_schemas_backend + 'article');
+const schemaCategory = require(__path_schemas_backend + 'category');
+const schemaRSS = require(__path_schemas_backend + 'rss');
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
     const menuNav      = await schemaMenuBar.find({status:'active'})
-    const  slider      = await schemaSliders.find({status:'active'})
+    const category     = await schemaCategory.find({status:'active'})
+    const rss          = await schemaRSS.find({status:'active'})
+    const article      = await schemaArticle.find({status:'active'})
+                                            .sort({ updatedAt: 'desc' })
+                                            .select('-editordata')
     res.render(`${folderView}home`, {
         layout,
         menuNav,
-        slider,
+        article,
+        category,
+        rss,
      });
 });
 

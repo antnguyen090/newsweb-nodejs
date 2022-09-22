@@ -1,0 +1,22 @@
+<% 
+    showDashboard = (collection) =>{
+        let html =''
+        collection.forEach((obj)=>{
+            html +=` <div class="col-lg-3 col-6">
+                        <div class="small-box bg-info">
+                            <div class="inner">
+                                <h3>${obj.count}</h3>
+                                <p>${obj.name}</p>
+                            </div>
+                            <div class="icon">
+                                <i class="ion ion-information"></i>
+                            </div>
+                            <a href="/${systemConfig.prefixAdmin}/${obj.slug}" class="small-box-footer">More info
+                                <i class="fas fa-arrow-circle-right"></i>
+                            </a>
+                        </div>
+                    </div>`
+        })
+        return html;
+    }
+%> 

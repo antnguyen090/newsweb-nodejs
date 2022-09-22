@@ -26,3 +26,11 @@
 td > .thumb-product{
     width: 200px;
 }
+
+td > .ordering {
+    width: 60px;
+}
+
+table td div.option {
+  text-align: left;
+}

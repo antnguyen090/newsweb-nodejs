@@ -69,7 +69,7 @@ $( document ).ready( async function() {
                     let currentIcon = (status == 'active') ? "fa-check" : "fa-ban"
                     let newIcon = (status == 'active') ? "fa-ban" : "fa-check"
                     status = (status == 'active') ? "inactive" : "active"
-                    $(`#change-status-${id}`).removeClass(currentClass).addClass(classNew).attr('onClick', `changeStatus('${status}','${id}', '${link}')`).notify("Successful", {className: "success", autoHideDelay: 1500, position:"right"});
+                    $(`#change-status-${id}`).removeClass(currentClass).addClass(classNew).attr('onClick', `changeStatus('${status}','${id}', '${link}')`).notify("Successful", {className: "success", autoHideDelay: 1500, position:"left"});
                     $(`#change-status-${id} i`).removeClass(currentIcon).addClass(newIcon)
                     $(`#${id}`).attr("data-status",status)
                     if (status.toLowerCase() == 'inactive'){
@@ -80,7 +80,7 @@ $( document ).ready( async function() {
                         elmnumberInactive.text((numberInactive-1))
                     }
                 } else {
-                    $(`#change-status-${id}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, position:"right"});
+                    $(`#change-status-${id}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, position:"left"});
                 }
             }
         });
@@ -103,17 +103,17 @@ $( document ).ready( async function() {
         });
     }
 
-    deleteItem = (id, name, link) => {
+    deleteItem = (id, name, link, thumb) => {
         $('#modal-danger .modal-title').text('You want to delete this Item?')
         $('#modal-danger .modal-body p').text(`Name: ${name} - ID: ${id}`)
-        $('#modal-danger button[data-type="confirm"]').attr("onClick",`deleteItemConfirm('${id}','${link}')`)
+        $('#modal-danger button[data-type="confirm"]').attr("onClick",`deleteItemConfirm('${id}','${link}','${thumb}')`)
     }
 
-    deleteItemConfirm = (id,link)=>{
+    deleteItemConfirm = (id,link,thumb)=>{
         $.ajax({
             type: "post",
             url: `${link}`,
-            data: `id=${id}`,
+            data: `id=${id}&thumb=${thumb}`,
             dataType: "json",
             success: function (response) {
                 if(response.success == true){
@@ -140,13 +140,12 @@ $( document ).ready( async function() {
         });
     }
 
-    deleteMultiItemsConfirm = (items, link) => {
+    deleteMultiItemsConfirm = (items,img, link) => {
         let arrItems = items.split(",")
-
         $.ajax({
             type: "post",
             url: `${link}`,
-            data: `id=${items}`,
+            data: `id=${items}&img=${img}`,
             dataType: "json",
             success: async function (response) {
                 if(response.success == true){
@@ -220,6 +219,7 @@ $( document ).ready( async function() {
 
     deleteMultiItems = async (link) =>{
         let itemsDelete = [];
+        let imgDelete   = []
         let listItems =''
         let compare = new Boolean(false);
         $( "input[type='checkbox']" ).prop( "checked", function( i, val ) {
@@ -237,14 +237,16 @@ $( document ).ready( async function() {
             
             await boxChecked.each((index, value)=>{
                 let id = $(value).val()
+                let thumb = $(value).attr("data-img")
                 itemsDelete.push(id)
+                imgDelete.push(thumb)
                 listItems += `
                     <p> Name: ${$(`#name-item-${id}`).text()} - ID: ${id} </p>
                 `
             })
             $('#modal-danger .modal-title').text('You want to delete these Items?')
             $('#modal-danger .modal-body p').html(listItems)
-            $('#modal-danger button[data-type="confirm"]').css('display', 'block').attr("onClick",`deleteMultiItemsConfirm('${itemsDelete}','${link}')`)
+            $('#modal-danger button[data-type="confirm"]').css('display', 'block').attr("onClick",`deleteMultiItemsConfirm('${itemsDelete}','${imgDelete}','${link}')`)
         }
 
     }
@@ -268,7 +270,7 @@ $( document ).ready( async function() {
                     $('button[data-dismiss="modal"]').click()
                     $.each(arrItems, async (index, id)=>{
                             let html = await `
-                                <a href="javascript:" onclick="changeStatus('${updateStatus}','${id}', '/adminTTT/items/change-status/')" id="change-status-${id}" class="rounded-circle btn btn-sm ${updateBtn}">
+                                <a href="javascript:" onclick="changeStatus('${updateStatus}','${id}', '/${linkAdmin}items/change-status/')" id="change-status-${id}" class="rounded-circle btn btn-sm ${updateBtn}">
                                 <i class="fas ${updateIcon}"></i></a>
                                 `
                             $(`#status-item-${id}`).html(html)
@@ -351,5 +353,34 @@ $( document ).ready( async function() {
             }
         });
     })
+
+    changeOption = (data, isCheck) => {
+        let dataArr = data.split("-")
+        let id = dataArr[1]
+        let fieldOption = dataArr[0]
+        $.ajax({
+            type: "post",
+            url: `/${linkAdmin}article/option`,
+            data: `id=${id}&field=${fieldOption}&isCheck=${isCheck}`,
+            dataType: "json",
+            success: function (response) {
+                if(response.success == true){
+                    $(`#${data}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"right"});
+                } else {
+                    $(`#${data}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, elementPosition:"right"});
+                }
+            }
+        });
+    }
+
+    $("div.option input:checkbox").change(function(value) {
+        let data = value.target.getAttribute('id')
+        if(this.checked) {
+            changeOption(data, true)
+        } else{
+            changeOption(data, false)
+        }
+    }); 
+
 });
 

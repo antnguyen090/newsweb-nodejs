@@ -1,0 +1,14 @@
+<%
+    showBreakingNews = (collection) =>{
+        let html = ""
+        collection.forEach((val, index)=>{
+            if (index > 3) return;
+            html += ` <div class="text-truncate">
+                        <a class="text-white text-uppercase font-weight-semi-bold" href="single/${val.slug}">
+                            ${val.name}
+                        </a>
+                     </div>`
+            })
+            return html
+    }
+%>

@@ -7,8 +7,23 @@ var schema = new mongoose.Schema({
     slug: String,
     status: String,
     ordering: Number,
-    price: Number,
     thumb: String,
+    slider: {
+        type: Boolean,
+        default: false
+    },
+    toppost: {
+        type: Boolean,
+        default: false
+    },
+    breakingnews: {
+        type: Boolean,
+        default: false
+    },
+    fearture: {
+        type: Boolean,
+        default: false
+    },
     editordata: String,
     categoryId: String,
     category: { type: Schema.Types.ObjectId, ref: 'category' },

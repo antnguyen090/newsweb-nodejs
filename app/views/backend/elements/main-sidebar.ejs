@@ -5,11 +5,12 @@
         {name: 'Article', icon: 'fa-solid fa-newspaper', link: `${systemConfig.prefixAdmin}/article`},
         {name: 'Sliders', icon: 'fa-solid fa-images', link: `${systemConfig.prefixAdmin}/sliders`},
         {name: 'Menu Bar', icon: 'fa-solid fa-align-justify', link: `${systemConfig.prefixAdmin}/menubar`},
+        {name: 'RSS', icon: 'fa-solid fa-align-justify', link: `${systemConfig.prefixAdmin}/rss`},
     ];
     
     let xhtmlMenu = '';
     arrMenu.forEach(menu => {
-        xhtmlMenu += `          <li class="nav-item">
+        xhtmlMenu += `<li class="nav-item">
                 <a href="/${menu.link}" class="nav-link">
                   <i class="${menu.icon}" style="margin-right: 10px;"></i>
                   <p>

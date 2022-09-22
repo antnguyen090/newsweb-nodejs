@@ -1,12 +1,9 @@
 <%- include('./../../helpers/status'); -%>
 <%- include('./../../helpers/pagination'); -%>
 <%- include('./../../helpers/highlight'); -%>
-<%- include('./../../helpers/showcategory'); -%>
-<%- include('./../../helpers/showoptionbox'); -%>
-
 
 <% 
-	const collection = "article";
+	const collection = "rss";
 	const linkPrefix = "/" + systemConfig.prefixAdmin + `/${collection}/`;
 	const linkThumb = "/" + "uploads" + `/${collection}/`;
 
@@ -92,55 +89,47 @@
 						</th>
 						<th class="text-center">#</a></th>
 						<th class="text-center">Name</a></th>
-						<th class="text-center">Category</a></th>
-						<th class="text-center">Thumb</a></th>
+						<th class="text-center">Source</a></th>
 						<th class="text-center">Status</a></th>
-						<th class="text-center">Option</a></th>
 						<th class="text-center">Ordering</a></th>
 						<th class="text-center">Action</th>
 					</tr>
 				</thead>
 				<tbody>
 					<% items.forEach( (item, index) => { %>
-						<tr id="area-<%= item.id %>">
-							<td class="text-center">
-								<div class="custom-control custom-checkbox">
-									<input class="custom-control-input" data-status="<%= item.status %>" data-img="<%= item.thumb %>" type="checkbox" id="<%= item.id %>" name="cid" value="<%= item.id %>">
-									<label for="<%= item.id %>" class="custom-control-label"></label>
-								</div>
-							
-							</td>
-							<td class="text-center"><%= index+1 %></td>
-							<td class="text-center name text-wrap" id="name-item-<%= item.id%>">
-								<%- highlightHelper(item.name, keyword) %>
-							</td>
-							<td class="text-center" id="category-item-<%= item.categoryId%>"> <%- showCategory(category, item.categoryId) %> </td>
-							<td class="text-center" id="thumb-item-<%= item.id%>">
-								<img class="thumb-product" src="<%= linkThumb %><%= item.thumb%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
-							</td>
-							<td class="text-center position-relative" id="status-item-<%= item.id %>">
-								<%- statusHelper(collection, item.status, item.id)  %>
-							</td>
-							<td class="text-center position-relative">
-                                <div class="option">
-									<%- showOptionBox(item.id, item.slider, item.toppost, item.breakingnews, item.fearture)  %>
-								</div>
-							</td>
-							<td class="text-center position-relative" >
-								<input type="number" class="ordering" id="change-ordering-<%= item.id%>" name="items-ordering" data-router="<%= linkPrefix+'change-ordering'%>" data-id="<%= item.id%>"  value="<%= item.ordering%>" class="text-center ordering">
-							</td>
-							<td class="text-center">
-								<a href="<%= linkPrefix %>form/<%= item.id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
-									<i class="fas fa-pencil-alt"></i>
-								</a>
-			 
-								<button type="button" class="rounded-circle btn btn-sm btn-danger" onClick="deleteItem('<%= item.id %>', '<%= item.name %>','<%= linkPrefix%>delete/', '<%= item.thumb %>')" data-toggle="modal" data-target="#modal-danger">
-									<i class="fas fa-trash-alt"></i>
-								</button>
-							</td>
-						</tr>
-						<% }) %>
+					<tr id="area-<%= item.id %>">
+						<td class="text-center">
+							<div class="custom-control custom-checkbox">
+								<input class="custom-control-input" data-status="<%= item.status %>" type="checkbox" id="<%= item.id %>" name="cid" value="<%= item.id %>">
+								<label for="<%= item.id %>" class="custom-control-label"></label>
+							</div>
+						
+						</td>
+						<td class="text-center"><%= index+1 %></td>
+						<td class="text-center" id="name-item-<%= item.id%>"><%- highlightHelper(item.name, keyword) %></td>
+						<td class="text-center" ><%- item.source.toUpperCase() %></td>
+						<td class="text-center position-relative" id="status-item-<%= item.id %>">
+							<%- statusHelper(collection, item.status, item.id)  %>
+						</td>
+						
+						<td class="text-center position-relative" >
+							<input type="number" id="change-ordering-<%= item.id%>" name="items-ordering" data-router="<%= linkPrefix+'change-ordering'%>" data-id="<%= item.id%>"  value="<%= item.ordering%>" class="text-center ordering">
+						</td>
 
+						<td class="text-center">
+							<a href="<%= linkPrefix %>form/<%= item.id %>" class="rounded-circle btn btn-sm btn-info" title="Edit">
+								<i class="fas fa-pencil-alt"></i>
+							</a>
+         
+							<button type="button" class="rounded-circle btn btn-sm btn-danger" onClick="deleteItem('<%= item.id %>', '<%= item.name %>','<%= linkPrefix%>delete/')" data-toggle="modal" data-target="#modal-danger">
+								<i class="fas fa-trash-alt"></i>
+							</button>
+							<!-- <a href="javascript:deleteItem('<%= item.id %>')" data-router="<%= linkPrefix+'change-ordering'%>" class="rounded-circle btn btn-sm btn-danger" title="Delete">
+								<i class="fas fa-trash-alt"></i>
+							</a> -->
+						</td>
+					</tr>
+					<% }) %>
 				</tbody>
 			</table>
 		</form>

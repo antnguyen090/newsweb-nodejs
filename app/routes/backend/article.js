@@ -21,7 +21,7 @@ const FileHelpers = require(__path_helpers + 'file');
 const uploadThumb	 = FileHelpers.upload('thumb', `${mainName}`);
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
-	let category = await schemaArticle.find()
+	let category = await schemaCategory.find({status: 'active'})
     let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
@@ -60,6 +60,16 @@ router.get('(/status/:status)?', async (req, res, next) => {
 			})
 })
 
+router.post('(/option)', async (req, res, next) => {
+	let {id, field, isCheck} = req.body
+	try {
+		let data = await modelArticle.changeOption(id, field, isCheck)
+		res.send({success: true})
+	} catch (error) {
+		console.log(error)
+	}
+})
+
 // access FORM
 router.get('/form/(:id)?', async function (req, res, next) {
 	// let dataa = await schemaarticle().populate('articles')
@@ -73,7 +83,7 @@ router.get('/form/(:id)?', async function (req, res, next) {
 	if (req.params.id != undefined) {
 		schemaArticle.countDocuments({_id: req.params.id}, async function (err, count){ 
 			if(count>0){
-				let item = await schemaArticle.getItemByID(req.params.id)
+				let item = await modelArticle.getItemByID(req.params.id)
 				//document exists });
 				res.render(`${folderView}form`, {
 					main: main,
@@ -109,7 +119,20 @@ router.post('/save/(:id)?',
 					return Promise.reject("Duplicated Name")
 				}
 				return "true"
-		})}), 
+		})}),
+	body('categoryId')
+		.custom(async (val, {req}) => {
+			if ( val == undefined) {
+				return Promise.reject("Category must be choose ")
+			} else {
+				try {
+					let data = await schemaCategory.findOne({_id: val, status:'active'});
+					return data;
+				} catch (error) {
+					return Promise.reject("Category is invalid")
+				}
+			}
+		}),
 	body('ordering')
 		.isInt({min: 0, max: 99})
 		.withMessage('Ordering must be number from 0 to 99'),
@@ -132,9 +155,9 @@ router.post('/save/(:id)?',
 			}
 			let errors = await validationResult(req)
 			if(!errors.isEmpty()) {
-				let category = await schemaArticle({status:"active"})
+				let category = await schemaCategory.find({status:'active'})
 				let main = {pageTitle: pageTitle,
-							showError: schemaArticle.showError(errors.errors),
+							showError: modelArticle.showError(errors.errors),
 							showSuccess: "",
 							categoryList: category,
 						}
@@ -153,7 +176,7 @@ router.post('/save/(:id)?',
 				}
 				return
 			} else {
-				if(req.file == undefined){ // không có upload lại hình
+				if(req.file == undefined){ //không có upload lại hình
 					item.thumb = itemData[0].thumb;
 				}else {
 					item.thumb = req.file.filename;
@@ -170,7 +193,7 @@ router.post('/save/(:id)?',
 					res.redirect(linkIndex);
 				} else {
 					item.category = req.body.categoryId
-					let data = await schemaArticle.saveItems(item)
+					let data = await modelArticle.saveItems(item)
 					req.flash('success', "Add Item Successfully");
 					res.redirect(linkIndex);
 				}
@@ -185,11 +208,17 @@ router.post('/save/(:id)?',
 router.post('/delete/(:status)?', async (req, res, next) => {
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
-        let data = await schemaArticle.deleteItemsMulti(arrId);
+		let arrPhoto = req.body.img.split(",")
+		let deletePhoto = await arrPhoto.forEach((value)=>{
+			FileHelpers.remove(`public/uploads/${mainName}/`, value)
+		})
+        let data = await modelArticle.deleteItemsMulti(arrId);
         res.send({success: true})
     } else {
         let id = req.body.id
-        let data = await schemaArticle.deleteItem(id);
+		let thumb = req.body.thumb
+		let removePhoto = await FileHelpers.remove(`public/uploads/${mainName}/`, thumb)
+        let data = await modelArticle.deleteItem(id);
         res.send({success: true})
     }
 });
@@ -198,12 +227,12 @@ router.post('/change-status/(:status)?', async (req, res, next) => {
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
         let status = req.body.status
-        let data = await schemaArticle.changeStatusItemsMulti(arrId, status);
+        let data = await modelArticle.changeStatusItemsMulti(arrId, status);
         res.send({success: true})
     } else {
         let {status, id} = req.body
         status = (status == 'active') ? 'inactive' : 'active'
-        let changeStatus = await schemaArticle.changeStatus(id, status)
+        let changeStatus = await modelArticle.changeStatus(id, status)
         res.send({success: true})
     }
 });
@@ -219,7 +248,7 @@ router.post('/change-ordering',
 			return
 		}
 		let {ordering, id} = req.body
-		let changeStatus = await schemaArticle.changeOrdering(id, ordering)
+		let changeStatus = await modelArticle.changeOrdering(id, ordering)
 		res.send({success: true})
 });
 
@@ -234,7 +263,7 @@ router.post('/change-price',
 			return
 		}
 		let {price, id} = req.body
-		let changeStatus = await schemaArticle.changePrice(id, price)
+		let changeStatus = await modelArticle.changePrice(id, price)
 		res.send({success: true})
 });
 

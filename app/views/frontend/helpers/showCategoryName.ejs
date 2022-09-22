@@ -1,0 +1,6 @@
+<% 
+showCategoryName = (listCategory, id) =>{
+    let result = listCategory.find( x =>  x.id == id)
+    if (result != undefined) return {name: result.name, slug: result.slug}
+  }
+%>
