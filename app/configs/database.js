@@ -10,5 +10,6 @@ module.exports = {
     col_article: 'article',
     col_contact: 'contact',
     col_menubar: 'menubar',
-    col_rss: 'rss'
+    col_rss: 'rss',
+    col_setting:"setting",
 };

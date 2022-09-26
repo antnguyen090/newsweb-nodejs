@@ -90,6 +90,7 @@
 						<th class="text-center">#</a></th>
 						<th class="text-center">Name</a></th>
 						<th class="text-center">Source</a></th>
+						<th class="text-center">Link</a></th>
 						<th class="text-center">Status</a></th>
 						<th class="text-center">Ordering</a></th>
 						<th class="text-center">Action</th>
@@ -107,7 +108,8 @@
 						</td>
 						<td class="text-center"><%= index+1 %></td>
 						<td class="text-center" id="name-item-<%= item.id%>"><%- highlightHelper(item.name, keyword) %></td>
-						<td class="text-center" ><%- item.source.toUpperCase() %></td>
+						<td class="text-center text-bold" ><%- item.source.toUpperCase() %></td>
+						<td class="text-center" ><%- item.link %></td>
 						<td class="text-center position-relative" id="status-item-<%= item.id %>">
 							<%- statusHelper(collection, item.status, item.id)  %>
 						</td>

@@ -15,8 +15,8 @@ const schemaCategory = require(__path_schemas_backend + 'category');
 
 /* GET home page. */
 router.get('/(:slug)?', async function(req, res, next) {
-    const category     = await schemaCategory.find({status:'active'})
-    const menuNav = await schemaMenuBar.find({status:'active'})
+    const category     = await schemaCategory.find({status:'active'}).sort({ordering:"asc"})
+    const menuNav = await schemaMenuBar.find({status:'active'}).sort({ordering:"asc"})
     if (req.params.slug != undefined){
         try {
             let data = await modelSingle.getArticle(req.params.slug)

@@ -1,8 +1,7 @@
-<%- include('./../../helpers/shownewsarticlecategory'); -%>
+<%- include('./../../helpers/shownewsarticlerss'); -%>
     
 <% 
-    const articlePhoto = "article"
-    let numberPostLast = [4, 6, 1, 4]
+    let numberPostLast = [4, 6, 1, 4];
 %>
     <!-- News With Sidebar Start -->
     <div class="container-fluid mt-5 pt-3">
@@ -12,10 +11,10 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="section-title">
-                                <h4 class="m-0 text-uppercase font-weight-bold"><%= objCategory.name %></h4>
+                                <h4 class="m-0 text-uppercase font-weight-bold"><%= feed.title %></h4>
                             </div>
                         </div>
-                        <%- showNewsArticleCategory(article, articlePhoto, numberPostLast) %>
+                        <%- showNewsArticleRSS(feed.items, numberPostLast) %>
                     </div>
                 </div>
                 
@@ -24,10 +23,6 @@
                 <!-- Social Follow Start -->
                 <%- include('./../../elements/sidebarright/socialfollow'); -%>
                 <!-- Social Follow End -->
-
-                <!-- Ads Start -->
-                <!-- Ads End -->
-
                 <!-- Popular News Start -->
                 <%- include('./../../elements/sidebarright/popularnews'); -%>
                 <!-- Popular News End -->

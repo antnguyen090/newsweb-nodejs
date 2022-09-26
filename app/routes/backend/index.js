@@ -7,6 +7,7 @@ router.use('/category', require('./category'));
 router.use('/article', require('./article'));
 router.use('/menubar', require('./menubar'));
 router.use('/rss', require('./rss'));
+router.use('/setting', require('./setting'));
 router.use('/', require('./dashboard'));
 
 

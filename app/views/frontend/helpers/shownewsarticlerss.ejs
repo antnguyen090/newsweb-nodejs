@@ -1,0 +1,100 @@
+<%- include('./showCategoryName'); -%>
+<%- include('./customdaterss'); -%>
+
+
+<% 
+    showNewsArticleRSS = (collection, numberPostLast) => {
+        let html='';
+        let compare = (number) => {
+            let result = 0
+            for (let i=0; i <= number; i++){
+                result += numberPostLast[i]
+            }
+            return result;
+        }
+
+        let processContent = (content) => {
+            let href = content.match(/<a[^>]* href="([^"]*)"/)[1]
+            let img = content.match(/<img[^>]* src="([^"]*)"/)[1]
+            let description = content.match(/<[^]br>*([^]*)/)[1]
+            return {link: href, img: img, description: description}
+        }
+
+        collection.forEach( (val, index)=>{
+            if (index > compare(3)) return;
+            let data = processContent(val.content)
+            if (index < compare(0)){
+                html += `
+                    <div class="col-lg-6">
+                        <div class="position-relative mb-3">
+                            <img class="img-fluid w-100" src="${data.img}" style="object-fit: cover; height: 200px">
+                            <div class="bg-white border border-top-0 p-4">
+                                <div class="mb-2">
+                                    <a class="text-body" href="">
+                                        <small>${customDateRSS(val.isoDate)}</small>
+                                    </a>
+                                </div>
+                                <a class="h6 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="${data.link}">${val.title.slice(0, 50)}</a> 
+                                <p class="m-0">${data.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                    `
+            } else if(index < compare(1)){
+                html+=`
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
+                        <img class="img-fluid" src="${data.img}" alt="" style="width: 110px; height: 110px;">
+                        <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
+                            <div class="mb-2">
+                                <a class="text-body" href="">
+                                    <small>${customDateRSS(val.isoDate)}</small>
+                                </a>
+                            </div>
+                            <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="${data.link}">${val.title}</a>
+                        </div>
+                    </div>
+                </div>
+                `
+            } else if(index < compare(2)){
+                html+=`
+                <div class="col-lg-12">
+                    <div class="row news-lg mx-0 mb-3">
+                        <div class="col-md-6 h-100 px-0">
+                            <img class="img-fluid h-100" src="${data.img}" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-6 d-flex flex-column border bg-white h-100 px-0">
+                            <div class="mt-auto mb-auto p-4">
+                                <div class="mb-2">
+                                    <a class="text-body" href="">
+                                        <small>${customDateRSS(val.isoDate)}</small>
+                                    </a>
+                                </div>
+                                <a class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="${data.link}">${val.title}</a>
+                                <p class="m-0">${data.description}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `
+            } else if(index < compare(3)){
+                html+=`
+                <div class="col-lg-6">
+                    <div class="d-flex align-items-center bg-white mb-3" style="height: 110px;">
+                        <img class="img-fluid" src="${data.img}" alt="" style="width: 110px; height: 110px;">
+                        <div class="w-100 h-100 px-3 d-flex flex-column justify-content-center border border-left-0">
+                            <div class="mb-2">
+                                <a class="text-body" href="">
+                                    <small>${customDateRSS(val.isoDate)}</small>
+                                </a>
+                            </div>
+                            <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="${data.link}">${val.title}</a>
+                        </div>
+                    </div>
+                </div>
+                `
+            }
+        })
+        return html
+    }
+%>

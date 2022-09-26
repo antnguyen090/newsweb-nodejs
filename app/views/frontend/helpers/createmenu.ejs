@@ -1,6 +1,9 @@
 <%
     const parentMenu = "parentmenu"
-    menuHelper = (menu) =>{
+    const category   = "category"
+    const rss   = "rss"
+
+    menuHelper = (menu, dataCategory, dataRSS) =>{
         function hadChild(id) {
             return menu.some(function(el) {
               return el.parentMenu === id;
@@ -9,27 +12,51 @@
         function callSubMenu(submenu) {
             let html = ""
             submenu.forEach((item)=>{
-                html+= `<a href="${item.slug}" class="dropdown-item">${item.name}</a>`
+                html+= `<a href="/${item.slug}" class="dropdown-item">${item.name}</a>`
             })
             return html
         }
+
+        function callCategory(data) {
+            let html = ""
+            data.forEach((item)=>{
+                html+= `<a href="/${category}/${item.slug}" class="dropdown-item">${item.name}</a>`
+            })
+            return html
+        }
+
+        function callCategoryRSS(data) {
+            let html = ""
+            data.forEach((item)=>{
+                html+= `<a href="/${rss}/${item.id}" class="dropdown-item">${item.name}</a>`
+            })
+            return html
+        }
+
         let html =""
+        let xhtml = ''
         menu.forEach( (item, index)=>{
-            if (item.parentMenu == parentMenu && hadChild(item.id)){
+            if (item.parentMenu == parentMenu && hadChild(item.id) || item.slug == category || item.slug == rss){
                 let subMenu =  menu.filter(function(value){
                     if (value.parentMenu == item.id){
                         return true;
                     }
                 });
+                if (item.slug == category ) {
+                    xhtml = callCategory(dataCategory);
+                } else if (item.slug == rss){
+                    xhtml = callCategoryRSS(dataRSS);
+                } 
                 html += `
                     <div class="nav-item dropdown">
-                        <a href="${item.slug}" class="nav-link dropdown-toggle" data-toggle="dropdown">${item.name}</a>
+                        <a href="/${item.slug}" class="nav-link dropdown-toggle" data-toggle="dropdown">${item.name}</a>
                         <div class="dropdown-menu rounded-0 m-0" id="sub-${item.id}">
                             ${callSubMenu(subMenu)}
+                            ${xhtml}
                         </div>
                      </div>`
             } else if((item.parentMenu == parentMenu) && (hadChild(item.id) == false)){
-                html += `<a href="${item.slug}" class="nav-item nav-link">${item.name}</a>`
+                html += `<a href="/${item.slug}" class="nav-item nav-link">${item.name}</a>`
             } 
         })
         return html

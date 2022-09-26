@@ -1,0 +1,24 @@
+
+<%- include('./../helpers/customdate'); -%>
+<%- include('./showCategoryName'); -%>
+
+<%  
+    popularArticle = (items, number) =>{
+        let html = ''
+        items.forEach((val, index) =>{
+            if (index > number) return;
+            html +=`
+            <div class="mb-3">
+                <div class="mb-2">
+                    <a class="badge badge-primary text-uppercase font-weight-semi-bold p-1 mr-2" href="category/${showCategoryName(category, val.categoryId).slug}">${showCategoryName(category, val.categoryId).name}</a>
+                    <a class="text-body" href="">
+                        <small>${customDate(val.createdAt)}</small>
+                    </a>
+                </div>
+                <a class="small text-body text-uppercase font-weight-medium" href="single/${val.slug}">${val.name.slice(0, 50)}</a>
+            </div>
+            `
+        })
+        return html;
+    }
+%>

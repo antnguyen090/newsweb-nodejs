@@ -1,0 +1,16 @@
+<% 
+    customDateRSS = (data) =>{
+        date = new Date(data);
+        yyyy = date.getFullYear();
+        mm = date.getMonth()+1;
+        dd = date.getDate();
+
+        if (dd < 10) {
+        dd = '0' + dd;
+        }
+        if (mm < 10) {
+        mm = '0' + mm;
+        }
+        return `${dd}-${mm}-${yyyy}`
+    }
+%>

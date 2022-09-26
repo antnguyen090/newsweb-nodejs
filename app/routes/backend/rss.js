@@ -112,7 +112,6 @@ router.post('/save/(:id)?',
 				itemData = await schemaRSS.find({_id: req.params.id})
 			}
 			let errors = await validationResult(req)
-			console.log(errors)
 			if(!errors.isEmpty()) {
 				let main = {pageTitle: pageTitle,
 							showError: modelRSS.showError(errors.errors),
@@ -190,21 +189,6 @@ router.post('/change-ordering',
 		}
 		let {ordering, id} = req.body
 		let changeStatus = await modelRSS.changeOrdering(id, ordering)
-		res.send({success: true})
-});
-
-router.post('/change-price', 
-	body('price')
-		.isInt({min: 0})
-		.withMessage('Price must be number from 0'), 
-	async (req, res, next) => {
-		const errors = validationResult(req);
-		if (! errors.isEmpty()) {
-			res.send({success: false, errors: errors})
-			return
-		}
-		let {price, id} = req.body
-		let changeStatus = await modelRSS.changePrice(id, price)
 		res.send({success: true})
 });
 
