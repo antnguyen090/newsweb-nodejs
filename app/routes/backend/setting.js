@@ -22,7 +22,7 @@ const uploadThumb	 = FileHelpers.upload('thumb', `${mainName}`);
 // access FORM
 router.get('/', async function (req, res, next) {
 	let category = await schemaCategory.find({status:'active'})
-	let settingData = await schemaSetting.findOne({_id:'6331791e087d00adf830604d' })
+	let settingData = await schemaSetting.findOne({_id:'6331791e087d00adf830604d'})
 	console.log(settingData)
 	let main = {pageTitle: pageTitle,
 	showError: "",

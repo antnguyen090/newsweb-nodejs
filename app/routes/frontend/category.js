@@ -13,11 +13,15 @@ const schemaCategory = require(__path_schemas_backend + 'category');
 const schemaRSS = require(__path_schemas_backend + 'rss');
 const schemaArticle = require(__path_schemas_backend + 'article');
 const linkIndex     = '/index'
+const schemaSetting = require(__path_schemas_backend + "setting");
+
 /* GET home page. */
 router.get('/(:category)?', async function(req, res, next) {
     const category     = await schemaCategory.find({status:'active'}).sort({ordering:"asc"})
     const menuNav = await schemaMenuBar.find({status:'active'}).sort({ordering:"asc"})
     const rss     = await schemaRSS.find({status:'active'}).sort({ordering:"asc"})
+    let settingData = await schemaSetting.findOne({_id:'6331791e087d00adf830604d'})
+    settingData = JSON.parse(settingData.setting)
 
     if (req.params.category != undefined) {
                 const objCategory = category.find(item => item.slug === req.params.category);
@@ -33,6 +37,7 @@ router.get('/(:category)?', async function(req, res, next) {
                         rss,
                         article,
                         objCategory,
+                        settingData,
                     });
                 } else {
                     res.redirect(linkIndex);

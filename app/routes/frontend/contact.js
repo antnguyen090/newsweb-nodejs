@@ -14,6 +14,7 @@ const schemaMenuBar = require(__path_schemas_backend + 'menubar');
 const schemaCategory = require(__path_schemas_backend + 'category');
 const schemaRSS = require(__path_schemas_backend + 'rss');
 const schemaArticle = require(__path_schemas_backend + 'article');
+const schemaSetting = require(__path_schemas_backend + "setting");
 
 /* GET home page. */
 router.get('/', async function(req, res, next) {
@@ -23,12 +24,15 @@ router.get('/', async function(req, res, next) {
   const article      = await schemaArticle.find({status:'active'})
                                             .sort({ updatedAt: 'desc' })
                                             .select('-editordata')
+  let settingData = await schemaSetting.findOne({_id:'6331791e087d00adf830604d'})
+  settingData = JSON.parse(settingData.setting)                                          
     res.render(`${folderView}contact`, {
         category,
         layout,
         menuNav,
         rss,
         article,
+        settingData,
      });
 });
 

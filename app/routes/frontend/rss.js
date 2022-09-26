@@ -15,9 +15,12 @@ const modelRSS      = require(__path_model_frontend + 'rss');
 const upRSS         = 'public/rssfile/'
 const schemaArticle = require(__path_schemas_backend + 'article');
 const schemaCategory = require(__path_schemas_backend + 'category');
+const schemaSetting = require(__path_schemas_backend + "setting");
 
 /* GET home page. */
 router.get('/(:id)?', async function(req, res, next) {
+    let settingData = await schemaSetting.findOne({_id:'6331791e087d00adf830604d'})
+    settingData = JSON.parse(settingData.setting)
     let delay        = 3600000
     let dataFile     = ''
     let rss          = await modelRSS.getDataCategory()
@@ -68,6 +71,7 @@ router.get('/(:id)?', async function(req, res, next) {
                 feed,
                 article, 
                 rss,
+                settingData,
         })
 });
 

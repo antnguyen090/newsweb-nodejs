@@ -43,6 +43,17 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="form-group row ckeditor">
+                                                <label for="uploaded" class="col-sm-2 col-form-label text-sm-right">Image Uploaded</label>
+                                            <% if (item.thumb != undefined) { %>
+                                                <img style="width: 40%; padding: 10px" src="<%= linkThumb %><%= item.thumb%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <%}  %>
+                                            </div>
+                                            <div class="form-group row">
+                                                <label for="coppyright" class="col-sm-2 col-form-label text-sm-right required">Coppyright</label>
+                                                <div class="col-xs-12 col-sm-8">
+                                                    <input type="text" id="title-input-form" name="coppyright" value="<%= item.coppyright %>" class="form-control form-control-sm"></div>
+                                            </div>
                                             <div class="form-group row">
                                                 <label for="address" class="col-sm-2 col-form-label text-sm-right required">Adress</label>
                                                 <div class="col-xs-12 col-sm-8">
