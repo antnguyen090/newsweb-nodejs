@@ -13,16 +13,15 @@
             return result;
         }
 
-        let processContent = (content) => {
+        let processContent = (val) => {
+            let content = val.content
             let href = content.match(/<a[^>]* href="([^"]*)"/)[1]
             let img = content.match(/<img[^>]* src="([^"]*)"/)[1]
             let description = content.match(/<[^]br>*([^]*)/)[1]
             return {link: href, img: img, description: description}
         }
-
         collection.forEach( (val, index)=>{
-            if (index > compare(3)) return;
-            let data = processContent(val.content)
+            let data = processContent(val)
             if (index < compare(0)){
                 html += `
                     <div class="col-lg-6">

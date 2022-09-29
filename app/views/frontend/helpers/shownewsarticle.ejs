@@ -3,7 +3,8 @@
 
 
 <% 
-    showNewsArticle = (collection, category, photo, numberPostLast) => {
+    showNewsArticle = (collection, category, photo, numberPostLast, keyword) => {
+        let name= ''
         let html=''
         let compare = (number) => {
             let result = 0
@@ -13,6 +14,11 @@
             return result
         }
         collection.forEach((val, index)=>{
+                name = val.name
+                if (keyword != undefined){
+                    keywordCompare = new RegExp(keyword, 'ig')
+                    name = name.replaceAll(keywordCompare, `<span style="background-color: yellow;">${keyword}</span>`)
+                }
                 if (index < compare(0)){
                     html += `
                     <div class="col-lg-6">
@@ -25,7 +31,7 @@
                                         <small>${customDate(val.createdAt)}</small>
                                     </a>
                                 </div>
-                                <a class="h6 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${val.name}</a> 
+                                <a class="h6 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${name}</a> 
                                 <!-- <p class="m-0">description</p> -->
                             </div>
                         </div>
@@ -43,7 +49,7 @@
                                         <small>${customDate(val.createdAt)}</small>
                                     </a>
                                 </div>
-                                <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${val.name}</a>
+                                <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${name}</a>
                             </div>
                         </div>
                     </div>
@@ -63,7 +69,7 @@
                                             <small>${customDate(val.createdAt)}</small>
                                         </a>
                                     </div>
-                                    <a class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${val.name}</a>
+                                    <a class="h4 d-block mb-3 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${name}</a>
                                     <!-- <p class="m-0">description</p> -->
                                 </div>
                             </div>
@@ -82,7 +88,7 @@
                                         <small>${customDate(val.createdAt)}</small>
                                     </a>
                                 </div>
-                                <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${val.name}</a>
+                                <a class="h6 m-0 text-secondary text-uppercase font-weight-bold" href="single/${val.slug}">${name}</a>
                             </div>
                         </div>
                     </div>

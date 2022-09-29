@@ -1,6 +1,40 @@
 (function ($) {
     "use strict";
-    
+    //realtime clock
+    function getDateTime() {
+        var now     = new Date(); 
+        var year    = now.getFullYear();
+        var month   = now.getMonth()+1; 
+        var day     = now.getDate();
+        var hour    = now.getHours();
+        var minute  = now.getMinutes();
+        var second  = now.getSeconds(); 
+        if(month.toString().length == 1) {
+             month = '0'+month;
+        }
+        if(day.toString().length == 1) {
+             day = '0'+day;
+        }   
+        if(hour.toString().length == 1) {
+             hour = '0'+hour;
+        }
+        if(minute.toString().length == 1) {
+             minute = '0'+minute;
+        }
+        if(second.toString().length == 1) {
+             second = '0'+second;
+        }   
+        var dateTime = hour+':'+minute+':'+second+' '+ day+'/'+month+'/'+year;   
+        return dateTime;
+    }
+
+    // example usage: realtime clock
+    setInterval(function(){
+        let currentTime = getDateTime();
+        document.getElementById("realtimeClock").innerHTML = currentTime;
+    }, 1000);
+
+
     // Dropdown on mouse hover
     $(document).ready(function () {
         function toggleNavbarMethod() {
@@ -18,11 +52,12 @@
         $(window).resize(toggleNavbarMethod);
 
         $("#sendMail").submit(function(e) {
+            let urlPath = window.location.pathname.split("/")[1]
             e.preventDefault(); // avoid to execute the actual submit of the form.
             var form = $("#sendMail").serialize();
             $.ajax({
                 type: "POST",
-                url: "/sendmail",
+                url: `/${urlPath}/sendmail`,
                 data: form, // serializes the form's elements.
                 success: function (response) {
                     if(response.success == true){
@@ -182,5 +217,23 @@
     var pathname = window.location.pathname.split("/")[1]
     $(`#navbarCollapse a[href="${pathname}"]`).addClass("active")
 
+    const divs = document.querySelectorAll('article > div');
+
+    document.querySelector('#cityName').addEventListener('change', () => {
+    let id = event.target.value;  
+    //if selectedIndex = 0, default is selected so all divs will be displayed, otherwise all divs will be removed
+    divs.forEach(div =>{
+        let compare = $(div).attr('id')
+        if (compare == id){
+            div.style.display = 'block'
+        } else {
+            div.style.display = 'none'
+        }
+    });
+    //the coresponding div to the selected option will be displayed
+
+    })
+    let urlPath = window.location.pathname.split("/")[1]
+    $(`nav.navbar a[href='/${urlPath}']`).addClass('active')
 })(jQuery);
 

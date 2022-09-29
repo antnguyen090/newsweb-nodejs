@@ -1,0 +1,11 @@
+<%
+  showTags= (category) =>{
+    let html = ''
+    category.forEach(item=>{
+      html+=`
+        <a href="/category/${item.slug}" class="btn btn-sm btn-outline-secondary m-1">${item.name}</a>
+      `
+    })
+    return html
+  } 
+%>

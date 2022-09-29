@@ -1,56 +1,111 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-const { body, validationResult } = require('express-validator');
-const layout	     = __path_views_frontend + 'frontend';
+const {body, validationResult} = require('express-validator');
+const layout = __path_views_frontend + 'frontend';
+const fetch = (...args) => import ('node-fetch').then(({default: fetch}) => fetch(...args));
+const newDate = require('new-date');
+const fs = require('fs');
 
 const mainName = "single"
 const folderView = __path_views_frontend + `pages/${mainName}/`;
-const systemConfig  = require(__path_configs + 'system');
-const notify  		= require(__path_configs + 'notify');
+const systemConfig = require(__path_configs + 'system');
+const notify = require(__path_configs + 'notify');
 const schemaMenuBar = require(__path_schemas_backend + 'menubar');
-const modelSingle   = require(__path_model_frontend + 'single');
+const modelSingle = require(__path_model_frontend + 'single');
 const schemaCategory = require(__path_schemas_backend + 'category');
 const schemaSetting = require(__path_schemas_backend + "setting");
 const schemaRSS = require(__path_schemas_backend + 'rss');
 const schemaArticle = require(__path_schemas_backend + 'article');
+const schemaWheather = require(__path_schemas_backend + 'wheather');
+const upWheather = 'public/wheatherfile/'
 
 /* GET home page. */
-router.get('/(:slug)?', async function(req, res, next) {
-    const category     = await schemaCategory.find({status:'active'}).sort({ordering:"asc"})
+router.get('/(:slug)?', async function (req, res, next) {
+    try {
+        let delay = 600000;
+        
+        const wheather = await schemaWheather.find({status: 'active'}).sort({ordering: "asc"});
+        const category = await schemaCategory.find({status: 'active'}).sort({ordering: "asc"})
+        const menuNav = await schemaMenuBar.find({status: 'active'}).sort({ordering: "asc"})
+        const rss = await schemaRSS.find({status: 'active'}).sort({ordering: "asc"})
+        const article = await schemaArticle.find({status: 'active'}).sort({updatedAt: 'desc'}).select('-editordata')
+        let settingData = await schemaSetting.findOne({_id: '6331791e087d00adf830604d'})
+        settingData = JSON.parse(settingData.setting)
+        if (req.params.slug != undefined) {
+            try {
+                let data = await modelSingle.getArticle(req.params.slug)
+                    let dataFile,
+                        dataStore,
+                        feed,
+                        result
+                    let dataWheather = [];
+                let dataWheatherFunc = await wheather.forEach(async (item, index) => {
+                    try {
+                        dataFile = fs.readFileSync(`${upWheather}${
+                            item.id
+                        }`, 'utf8')
+                        dataFile = JSON.parse(dataFile)
+                        let datePub = newDate(dataFile.pubDate)
+                        let dateNow = newDate(Date.now())
+                        if (dateNow - datePub > delay) { // change the endpoint with yours
+                            result = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${
+                                item.api
+                            }%20viet%20nam?unitGroup=metric&key=ZTYE8BVSEZGU69YC62WFMKQLH&contentType=json`);
+                            feed = await result.json();
+                            feed.pubDate = newDate(Date.now())
+                            feed.id = await item.id
+                            dataStore = JSON.stringify(feed);
+                            dataWheather.push(feed)
+                            fs.writeFile(`${upWheather}${
+                                item.id
+                            }`, dataStore, err => {
+                                console.log('File successfully written to disk ');
+                            });
 
-    const menuNav = await schemaMenuBar.find({status:'active'}).sort({ordering:"asc"})
-    const rss          = await schemaRSS.find({status:'active'}).sort({ordering:"asc"})
-    const article      = await schemaArticle.find({status:'active'})
-                                            .sort({ updatedAt: 'desc' })
-                                            .select('-editordata')
-    let settingData = await schemaSetting.findOne({_id:'6331791e087d00adf830604d'})
-    settingData = JSON.parse(settingData.setting)    
-    if (req.params.slug != undefined){
-        try {
-            let data = await modelSingle.getArticle(req.params.slug)
-            res.render(`${folderView}single`, {
-                layout,
-                article,
-                menuNav,
-                data,
-                category,
-                settingData,
-                rss,
-             });
-        } catch (error) {
-            console.log(error)
+                        } else {
+                            feed = dataFile;
+                            dataWheather.push(feed)
+                        }
+                    } catch (error) { // change the endpoint with yours
+                        result = await fetch(`https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${
+                            item.api
+                        }%20viet%20nam?unitGroup=metric&key=ZTYE8BVSEZGU69YC62WFMKQLH&contentType=json`);
+                        feed = await result.json();
+                        feed.pubDate = newDate(Date.now())
+                        feed.id = await item.id
+                        dataStore = JSON.stringify(feed);
+                        fs.writeFile(`${upWheather}${
+                            item.id
+                        }`, dataStore, err => {
+                            console.log('File successfully written to disk 3');
+                        });
+                        dataWheather.push(feed)
+                    }
+                    if (dataWheather.length == wheather.length) {
+                        res.render(`${folderView}single`, {
+                            layout,
+                            article,
+                            menuNav,
+                            data,
+                            category,
+                            settingData,
+                            rss,
+                            dataWheather
+                        });
+                    }
+                })
+
+            } catch (error) {
+                console.log(error)
+            }
+
+        } else {
+            res.redirect('/error')
         }
-       
-    } else{
-        res.render(`${folderView}single`, {
-            layout,
-            menuNav,
-            settingData,
-         });
-    }   
+    } catch (error) {
+        console.log(error)
+    }
 });
 
 module.exports = router;
-
-  

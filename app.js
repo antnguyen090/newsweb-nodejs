@@ -36,6 +36,7 @@ global.__path_model_frontend   = __path_app + pathConfig.folder_model_frontend +
 global.__path_public      = __base + pathConfig.folder_public + '/';
 global.__path_uploads     = __path_public + pathConfig.folder_uploads + '/';
 const systemConfig = require(__path_configs + 'system');
+const layoutFrontEnd	     = __path_views_frontend + 'frontend';
 
 var app = express();
 
@@ -83,18 +84,16 @@ app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
-
   // render the error page
   if(systemConfig.env == "dev") {
     res.status(err.status || 500);
-    res.render(__path_views_backend +  'pages/error', {pageTitle   : 'Page Not Found ' });
+    res.render(__path_views_frontend +  'pages/error', {pageTitle   : 'Page Not Found ' });
   }
 
   // render the error page
   if(systemConfig.env == "production") {
     res.status(err.status || 500);
-    res.render(__path_views_frontend +  'pages/error', {layout: false, pageTitle   : 'Page Not Found '
-    });
+    res.redirect('/error')
   }
 });
 

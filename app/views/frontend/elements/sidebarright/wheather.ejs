@@ -1,0 +1,19 @@
+
+<%- include('./../../helpers/showwheatheroption'); -%>
+<%- include('./../../helpers/showwheathermain'); -%>
+
+<div class="mb-3">
+    <div class="section-title mb-0">
+        <h4 class="m-0 text-uppercase font-weight-bold">Bản tin thời tiết</h4>
+    </div>
+    <main class="containerWheather">
+        <article>
+            <section class="header">
+                <select name="city" id="cityName">
+                   <%- showWheatherOption(dataWheather) %>
+                </select>
+            </section>
+                <%- showWheatherMain(dataWheather) %>
+        </article>
+    </main>
+</div>

@@ -1,0 +1,48 @@
+<%- include('./../../helpers/shownewsarticle'); -%>
+
+<% 
+    const articlePhoto = "article"
+    let numberPostLast = [2, 2, 1, 2]
+%>
+<!-- Contact Start -->
+<div class="container-fluid mt-5 pt-3">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="wrap-form-404">
+                    <img src="\frontend\dist\img\404.png" alt=""
+                        class="icon-404">
+                    <strong class="title-404">Không tìm thấy đường dẫn này</strong>
+                    <p>Bạn có thể truy cập vào <a href="/" style="font-weight: 700;">trang chủ.</a> 
+                    <p class="width_common note-more-news">Dưới đây là một số tin tức nổi bật trong ngày mà bạn có thể
+                        quan tâm.</p>
+                </div>
+                <div class="row">
+                    <%- showNewsArticle(article, category, articlePhoto, numberPostLast) %>
+                 </div>
+            </div>
+            <!-- News With SidebarRight Start -->
+            <div class="col-lg-4">
+                <!-- Social Follow Start -->
+                <%- include('./../../elements/sidebarright/wheather'); -%>
+                    <!-- Social Follow End -->
+
+                    <!-- Ads Start -->
+                    <!-- Ads End -->
+
+                    <!-- Popular News Start -->
+                    <%- include('./../../elements/sidebarright/popularnews'); -%>
+                        <!-- Popular News End -->
+
+                        <!-- Newsletter Start -->
+                        <%- include('./../../elements/sidebarright/newsletter'); -%>
+                            <!-- Newsletter End -->
+                            <!-- Tags Start -->
+                            <%- include('./../../elements/sidebarright/tags'); -%>
+                                <!-- Tags End -->
+            </div>
+            <!-- News With SidebarRight End -->
+        </div>
+    </div>
+</div>
+<!-- Contact End -->

@@ -6,6 +6,10 @@ var schema = new mongoose.Schema({
     email: String,
     subject: String,
     message: String,
-});
+    ordering: Number,
+    status: String,
+},
+{ timestamps: true }
+);
 
 module.exports = mongoose.model(databaseConfig.col_contact, schema );

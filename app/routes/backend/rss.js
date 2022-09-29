@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
+const fs = require('fs');
 
 const mainName = "rss"
 const pageTitle = `RSS Management`
@@ -17,6 +18,7 @@ const ParamsHelpers = require(__path_helpers + 'params');
 const folderView = __path_views_backend + `/pages/${mainName}/`;
 const FileHelpers = require(__path_helpers + 'file');
 const uploadThumb	 = FileHelpers.upload('thumb', `${mainName}`);
+const upRSS         = 'public/rssfile/'
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
     let inform = req.flash()
@@ -105,7 +107,6 @@ router.post('/save/(:id)?',
 		.withMessage('Ordering must be number from 0 to 99'),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
-			console.log(req.body)
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
@@ -150,14 +151,27 @@ router.post('/save/(:id)?',
 
 // Delete
 router.post('/delete/(:status)?', async (req, res, next) => {
-    console.log(req.params.status)
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
         let data = await modelRSS.deleteItemsMulti(arrId);
+		let deleteRSSfiles = await arrId.forEach((value)=>{
+			try {
+				fs.unlinkSync(`${upRSS}${value}`)
+				//file removed
+			} catch(err) {
+				console.error(err)
+			}
+		})
         res.send({success: true})
     } else {
         let id = req.body.id
         let data = await modelRSS.deleteItem(id);
+		try {
+			fs.unlinkSync(`${upRSS}${id}`)
+			//file removed
+		} catch(err) {
+			console.error(err)
+		}
         res.send({success: true})
     }
 });
@@ -166,7 +180,6 @@ router.post('/change-status/(:status)?', async (req, res, next) => {
     if (req.params.status === 'multi') {
         let arrId = req.body.id.split(",")
         let status = req.body.status
-        console.log(status)
         let data = await modelRSS.changeStatusItemsMulti(arrId, status);
         res.send({success: true})
     } else {

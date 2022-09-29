@@ -112,7 +112,6 @@ router.post('/save/(:id)?',
 				itemData = await schemaCategory.find({_id: req.params.id})
 			}
 			let errors = await validationResult(req)
-			console.log(errors)
 			if(!errors.isEmpty()) {
 				let main = {pageTitle: pageTitle,
 							showError: modelCategory.showError(errors.errors),

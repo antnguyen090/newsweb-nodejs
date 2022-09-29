@@ -1,0 +1,17 @@
+<%
+    showWheatherOption  = (collection) =>{
+        let html=''
+        collection.forEach((item, index)=>{
+            if (index == 0){
+                html += `
+                    <option value="wheather-${item.id}">${item.resolvedAddress}</option>
+                `
+            } else{
+                html+=`
+                    <option value="wheather-${item.id}">${item.resolvedAddress}</option>
+                `
+            }
+        })
+        return html
+    }
+%>

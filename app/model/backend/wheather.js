@@ -1,22 +1,22 @@
-const mainName = "sliders"
-const schemaSliders 	= require(__path_schemas_backend + mainName);
+const mainName = "wheather"
+const schemaCategory 	= require(__path_schemas_backend + mainName);
 
 module.exports = {
     saveItems: async (params) =>{
-        let data = await schemaSliders(params).save()
-        return
+            let data = await schemaCategory(params).save()
+            return
         },
-    listItems: async (objWhere,
+        listItems: async (objWhere,
             currentPage,
             totalItemsPerPage,
             updatedAt
             ) => {
-                let data = await schemaSliders.find(objWhere)
+                let data = await schemaCategory.find(objWhere)
                                             .skip((currentPage-1) * totalItemsPerPage)
                                             .limit(totalItemsPerPage)
                                             .sort(updatedAt)
                 return data;
-        },
+},
     showError:  (error) =>{
         let html = ""
         error.forEach((obj) =>{
@@ -40,37 +40,37 @@ module.exports = {
     },
 
     deleteItem: async (id) =>{
-        let data = await schemaSliders.deleteOne({_id: id})
+        let data = await schemaCategory.deleteOne({_id: id})
         return
     },
     deleteItemsMulti: async (arrId) =>{
-        let data = await schemaSliders.deleteMany({_id: {$in: arrId}})
+        let data = await schemaCategory.deleteMany({_id: {$in: arrId}})
         return
     }
     ,
     changeStatus: async (id, status) =>{
-        let data = await schemaSliders.updateOne({_id: id}, {status: status})
+        let data = await schemaCategory.updateOne({_id: id}, {status: status})
         return
         },
     changeStatusItemsMulti: async (arrId, status) =>{
-        let data = await schemaSliders.updateMany({_id: {$in: arrId}}, {status: status})
+        let data = await schemaCategory.updateMany({_id: {$in: arrId}}, {status: status})
 
     }
     ,
     changeOrdering: async (id, ordering) =>{
-            let data = await schemaSliders.updateOne({_id: id}, {ordering: ordering})
+            let data = await schemaCategory.updateOne({_id: id}, {ordering: ordering})
             return
             },
     getItemByID: async (id) =>{
-        let data = await schemaSliders.find({_id: id})
+        let data = await schemaCategory.find({_id: id})
         return data
         },
     editItem: async (id, item) =>{
-        let data = await schemaSliders.updateOne({_id: id}, item)
+        let data = await schemaCategory.updateOne({_id: id}, item)
         return
     },
     changePrice: async (id, price) =>{
-        let data = await schemaSliders.updateOne({_id: id}, {price: price})
+        let data = await schemaCategory.updateOne({_id: id}, {price: price})
         return
     },
 }
