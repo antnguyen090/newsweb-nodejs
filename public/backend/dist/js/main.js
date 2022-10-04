@@ -1,5 +1,23 @@
 $( document ).ready( async function() {
     const linkAdmin = "adminTTT/"
+    toastr.options = {
+        "closeButton": true,
+        "debug": false,
+        "newestOnTop": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "preventDuplicates": false,
+        "onclick": null,
+        "showDuration": "200",
+        "hideDuration": "200",
+        "timeOut": "2000",
+        "extendedTimeOut": "1000",
+        "showEasing": "swing",
+        "hideEasing": "linear",
+        "showMethod": "fadeIn",
+        "hideMethod": "fadeOut"
+      }
+    let notify = listNotify()
     var pathname = window.location.pathname
     $(`ul.nav-sidebar > li > a[href="${pathname}"]`).addClass('active');
     
@@ -88,7 +106,7 @@ $( document ).ready( async function() {
                     let currentIcon = (status == 'active') ? "fa-check" : "fa-ban"
                     let newIcon = (status == 'active') ? "fa-ban" : "fa-check"
                     status = (status == 'active') ? "inactive" : "active"
-                    $(`#change-status-${id}`).removeClass(currentClass).addClass(classNew).attr('onClick', `changeStatus('${status}','${id}', '${link}')`).notify("Successful", {className: "success", autoHideDelay: 1500, position:"left"});
+                    $(`#change-status-${id}`).removeClass(currentClass).addClass(classNew).attr('onClick', `changeStatus('${status}','${id}', '${link}')`)
                     $(`#change-status-${id} i`).removeClass(currentIcon).addClass(newIcon)
                     $(`#${id}`).attr("data-status",status)
                     if (status.toLowerCase() == 'inactive'){
@@ -98,8 +116,9 @@ $( document ).ready( async function() {
                         elmnumberActive.text((numberActive+1))
                         elmnumberInactive.text((numberInactive-1))
                     }
+                    toastr["success"](notify.CHANGE_STATUS_SUCCESS)
                 } else {
-                    $(`#change-status-${id}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, position:"left"});
+                    toastr["error"](notify.CHANGE_STATUS_ERROR)
                 }
             }
         });
@@ -113,10 +132,10 @@ $( document ).ready( async function() {
             dataType: "json",
             success: function (response) {
                 if(response.success == true){
-                    $(`#change-ordering-${id}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"right"});
+                    toastr["success"](notify.CHANGE_ORDERING_SUCCESS)
                 } else {
                     let msg = response.errors.errors[0].msg
-                    $(`#change-ordering-${id}`).notify(msg, {className: "error", autoHideDelay: 1500, });
+                    toastr["error"](notify.CHANGE_ORDERING_ERROR + '\n'+ msg )
                 }
             }
         });
@@ -151,9 +170,9 @@ $( document ).ready( async function() {
                         elmnumberInactive.text(numberInactive-1)
                     }
                     elmnumberAll.text(numberAll-1)
-                    $.notify("Delete Item Successfuly", "success");
+                    toastr["success"](notify.DELETE_SUCCESS)
                 } else {
-                    $.notify("Delete Item Unsuccessfuly", "danger");
+                    toastr["error"](notify.DELETE_ERROR)
                 }
             }
         });
@@ -186,9 +205,9 @@ $( document ).ready( async function() {
                             }
                             $(`#area-${id}`).remove()
                     })
-                    $.notify("Delete Items Successfuly", "success");
+                    toastr["success"](notify.DELETE_MULTI_SUCCESS)
                 } else {
-                    $.notify("Delete Item Unsuccessfuly", "danger");
+                    toastr["error"](notify.DELETE_MULTI_ERROR)
                 }
             }
         });
@@ -213,7 +232,7 @@ $( document ).ready( async function() {
             dataType: "json",
             success: function (response) {
                 if(response.success == true){
-                    $(`#change-price-${id}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"right"});
+                    $(`#change-price-${id}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"bottom"});
                 } else {
                     let msg = response.errors.errors[0].msg
                     $(`#change-price-${id}`).notify(msg, {className: "error", autoHideDelay: 1500, });
@@ -302,14 +321,13 @@ $( document ).ready( async function() {
                         elmnumberActive.text((numberActive+arrItems.length))
                         elmnumberInactive.text((numberInactive-arrItems.length))
                     }
-                    $.notify("Change Status Items Successfuly", "success");
+                    toastr["success"](notify.CHANGE_MULTI_STATUS_SUCCESS)
                 } else {
-                    $.notify("Change Status Unsuccessfuly", "danger");
+                    toastr["error"](notify.CHANGE_MULTI_STATUS_ERROR)
                 }
             }
         });
     }
-
     changeMultiStatus = async (status, link) =>{
         let modalClass = (status == 'active') ? "modal-success" : "modal-danger"
         let itemsChangeStatus = [];
@@ -365,9 +383,27 @@ $( document ).ready( async function() {
             dataType: "json",
             success: function (response) {
                 if(response.success == true){
-                    $(`#parentMenu-${id}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"right"});
+                    toastr["success"](notify.CHANGE_MENUTYPE_SUCCESS)
                 } else {
-                    $(`#parentMenu-${id}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, elementPosition:"right"});
+                    toastr["error"](notify.CHANGE_MENUTYPE_ERROR)
+                }
+            }
+        });
+    })
+
+    $( "select[name='category']" ).change(function (value) {
+        let id = value.target.getAttribute('data-id')
+        let newCategory = $(this).find(":selected").val()
+        $.ajax({
+            type: "post",
+            url: `article/changecategory`,
+            data: `id=${id}&newCategory=${newCategory}`,
+            dataType: "json",
+            success: function (response) {
+                if(response.success == true){
+                    toastr["success"](notify.CHANGE_CATEGORY_SUCCESS)
+                } else {
+                    toastr["error"](notify.CHANGE_CATEGORY_ERROR)
                 }
             }
         });
@@ -384,9 +420,9 @@ $( document ).ready( async function() {
             dataType: "json",
             success: function (response) {
                 if(response.success == true){
-                    $(`#${data}`).notify("Successful", {className: "success", autoHideDelay: 1500, elementPosition:"right"});
+                    toastr["success"](notify.CHANGE_OPTION_SUCCESS)
                 } else {
-                    $(`#${data}`).notify("Unsuccessful", {className: "error", autoHideDelay: 1500, elementPosition:"right"});
+                    toastr["error"](notify.CHANGE_OPTION_ERROR)
                 }
             }
         });
@@ -400,6 +436,7 @@ $( document ).ready( async function() {
             changeOption(data, false)
         }
     }); 
+
 
 });
 

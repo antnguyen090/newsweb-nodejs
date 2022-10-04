@@ -115,7 +115,17 @@
 							<td class="text-center name text-wrap" id="name-item-<%= item.id%>">
 								<%- highlightHelper(item.name, keyword) %>
 							</td>
-							<td class="text-center" id="category-item-<%= item.categoryId%>"> <%- showCategory(category, item.categoryId) %> </td>
+							<td class="text-center position-relative" >
+								<select id="category" data-id="<%= item.id %>" name="category" class="custom-select custom-select-sm">
+									<% category.forEach( (value, index) => { %>
+										<% if(value.id == item.categoryId){ %>
+											<option value="<%= value.id %>" selected><%= value.name %></option>
+											<% } else{ %>  
+											<option value="<%= value.id %>"><%= value.name %></option>
+										 <% } %>
+									<% }) %>
+								</select>
+						</td>
 							<td class="text-center" id="thumb-item-<%= item.id%>">
 								<img class="thumb-product" src="<%= linkThumb %><%= item.thumb%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
 							</td>

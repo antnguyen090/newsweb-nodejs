@@ -56,6 +56,10 @@ module.exports = {
         let data = await schemaArticle.updateOne({_id: id}, {[field]: isCheck})
         return
     },
+    changeCategory: async (id, newCategory) =>{
+        let data = await schemaArticle.updateOne({_id: id}, {categoryId: newCategory, category: newCategory})
+        return
+    },
 }
 
 

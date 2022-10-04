@@ -1,6 +1,24 @@
 (function ($) {
     "use strict";
     //realtime clock
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+    
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+    
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+        return false;
+    };
+
+    var keyword = (getUrlParameter('keyword') != false) ? getUrlParameter('keyword').replaceAll("+"," ") : ""
+    $('input[name="keyword"]').val(keyword)
     function getDateTime() {
         var now     = new Date(); 
         var year    = now.getFullYear();
@@ -92,13 +110,29 @@
                 url: `/${urlPath}/sendmail`,
                 data: form, // serializes the form's elements.
                 success: function (response) {
+                    toastr.options = {
+                        "closeButton": false,
+                        "debug": false,
+                        "newestOnTop": false,
+                        "progressBar": false,
+                        "positionClass": "toast-top-center",
+                        "preventDuplicates": false,
+                        "onclick": null,
+                        "showDuration": "300",
+                        "hideDuration": "1000",
+                        "timeOut": "5000",
+                        "extendedTimeOut": "1000",
+                        "showEasing": "swing",
+                        "hideEasing": "linear",
+                        "showMethod": "fadeIn",
+                        "hideMethod": "fadeOut"
+                      }
                     if(response.success == true){
-                        $.notify("Sent mail", "success");
+                        toastr["success"]("Đã gửi thông tin thành công")
                         $("#sendMail input").val("")
                         $("#sendMail textarea").val("")
-
                     } else {
-                        $.notify("Please try again!", "error");
+                        toastr["error"]("Đã có lỗi, vui lòng thử lại!")
                     }
                 }
             });

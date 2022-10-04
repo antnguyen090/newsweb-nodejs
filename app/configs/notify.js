@@ -40,5 +40,6 @@ module.exports = {
     ERROR_API_EMPTY: 'API must be non-empty',
     ERROR_EMAIL: "Please input Email",
     ERROR_MESSAGE: "Please input Message",
-    SUCCESS_SETTING_SAVE: 'Save Setting Successfully'
+    SUCCESS_SETTING_SAVE: 'Save Setting Successfully',
+    ERROR_NOT_EXITS: 'Not Exits'
 };

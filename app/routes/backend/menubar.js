@@ -194,6 +194,7 @@ router.post('/delete/(:status)?', async (req, res, next) => {
 	}
 	} catch (error) {
 		console.log(error)
+		res.send({success: false})
 	}
 });
 
@@ -212,6 +213,7 @@ router.post('/change-status/(:status)?', async (req, res, next) => {
 	}
 	} catch (error) {
 		 console.log(error)
+		 res.send({success: false})
 	}
 });
 
@@ -231,22 +233,44 @@ router.post('/change-ordering',
 			res.send({success: true})
 		} catch (error) {
 			console.log(error)
+			res.send({success: false})
 		}
 });
 
-router.post('/changeparentmenu', 
+router.post('/changeparentmenu',
+	body('id')
+				.custom(async (val, {req}) => {
+				return await schemaMenuBar.findOne({_id: val}).then(async user => {
+					console.log(user)
+					if (!user) {
+						return Promise.reject(notify.ERROR_NOT_EXITS)
+					}
+					return
+				})}),
+	body('newParent')
+				.custom(async (val, {req}) => {
+				if(val == 'parentmenu') return
+				return await schemaMenuBar.findOne({_id: val}).then(async user => {
+					console.log(user)
+					if (!user) {
+						return Promise.reject(notify.ERROR_NOT_EXITS)
+					}
+					return
+				})}),
 	async (req, res, next) => {
 		try {
 			const errors = validationResult(req);
 			if (! errors.isEmpty()) {
 				res.send({success: false, errors: errors})
 				return
+			} else{
+				let {newParent, id} = req.body
+				let changeStatus = await modelMenuBar.changeParent(id, newParent)
+				res.send({success: true})
 			}
-			let {newParent, id} = req.body
-			let changeStatus = await modelMenuBar.changeParent(id, newParent)
-			res.send({success: true})
 		} catch (error) {
 			console.log(error)
+			res.send({success: false})
 		}
 });
 
