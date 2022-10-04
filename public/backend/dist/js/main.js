@@ -2,11 +2,12 @@ $( document ).ready( async function() {
     const linkAdmin = "adminTTT/"
     var pathname = window.location.pathname
     $(`ul.nav-sidebar > li > a[href="${pathname}"]`).addClass('active');
-    $("#ImageMedias").change(function () {
+    
+    showPreview = (FileList,value) => {
         if (typeof (FileReader) != "undefined") {
-            var dvPreview = $("#divImageMediaPreview");
+            var dvPreview = $(`#divImageMediaPreview${value}`);
             dvPreview.html("");            
-            $($(this)[0].files).each(function () {
+            $(FileList).each(function () {
                 var file = $(this);                
                     var reader = new FileReader();
                     reader.onload = function (e) {
@@ -20,9 +21,27 @@ $( document ).ready( async function() {
         } else {
             alert("This browser does not support HTML5 FileReader.");
         }
+    }
+
+    $("#ImageMediasLarge").change(function (e) {
+        let value = e.target.getAttribute('value')
+        showPreview($(this)[0].files,value);
     });
 
+    $("#ImageMediasSmall").change(function (e) {
+        let value = e.target.getAttribute('value')
+        showPreview($(this)[0].files,value);
+    });
 
+    $("#ImageMediasTitle").change(function (e) {
+        let value = e.target.getAttribute('value')
+        showPreview($(this)[0].files,value);
+    });
+    
+    $("#ImageMediasArticle").change(function (e) {
+        let value = e.target.getAttribute('value')
+        showPreview($(this)[0].files,value);
+    });
     function ChangeToSlug(text)
         {
             //Đổi chữ hoa thành chữ thường

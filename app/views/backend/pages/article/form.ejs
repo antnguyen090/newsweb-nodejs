@@ -1,6 +1,6 @@
 <%- include('./../../helpers/showCategoryForm'); -%>
 <%- include('./../../helpers/showoptionbox'); -%>
-
+<%- include('./../../helpers/showerror'); -%>
 
 <% 
 	const collection = "article";
@@ -8,7 +8,7 @@
 	const linkThumb = "/" + "uploads" + `/${collection}/`;
 %>
 
-<%- main.showError %>
+<%- showError(main.showError) %>
 <div class="card card-info card-outline">
     <form action="<%= linkPrefix %>save/<%= item.id %>" method="POST" class="mb-0" enctype="multipart/form-data">
         <div class="card-body">
@@ -57,8 +57,8 @@
                             <div class="form-group row uploadImage">
                                 <label for="thumb" class="col-sm-2 col-form-label text-sm-right">Upload Image</label>
                                 <div class="col-xs-12 col-sm-8">
-									<input id="ImageMedias" name="thumb" type="file" class="custom-file-input">
-									<div id="divImageMediaPreview">
+									<input id="ImageMediasArticle" name="thumb" type="file" class="custom-file-input" value="Article">
+									<div id="divImageMediaPreviewArticle">
                                     </div>
                                 </div>
                             </div>
@@ -97,8 +97,8 @@
 <script>
         var editorData = `<%- item.editordata %>`;
         $('#summernote').summernote('code', editorData);
-        ImageMedias.onchange = evt => {
-			const [file] = ImageMedias.files
+        ImageMediasArticle.onchange = evt => {
+			const [file] = ImageMediasArticle.files
 			if (file) {
 				image_uploaded.setAttribute('value','uploaded')
 			} else{

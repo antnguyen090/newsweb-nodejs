@@ -19,7 +19,7 @@
 }
 
 
-#ImageMedias {
+#ImageMediasArticle, #ImageMediasSmall, #ImageMediasLarge, #ImageMediasTitle {
     opacity: 1;
 }
 

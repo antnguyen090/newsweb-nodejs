@@ -51,17 +51,24 @@ mongoose
 
 
 // view engine setup
-app.set('views', path.join(__dirname, 'app/views/backend'));
+app.set('views', path.join(__dirname, 'app/views/frontend'));
 app.set('view engine', 'ejs');
 app.use(expressLayouts);
-app.set('layout', __path_views_backend + '/backend');
+app.set('layout', __path_views_frontend + '/frontend');
 
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 // app.use(helmet());
-app.use(session({ secret: '123' }));
+app.use(session({
+  secret: 'work hard',
+  resave: false,
+  saveUninitialized: false,
+}));
+// parse incoming requests
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 

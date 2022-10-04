@@ -1,14 +1,13 @@
 const schemaArticle = require(__path_schemas_backend + 'article');
 
 module.exports = {
-    listItems: async (objWhere, currentPage, totalItemsPerPage, updatedAt) => {
+    listItems: async (objWhere, limit , updatedAt) => {
         let data = await schemaArticle.find(objWhere)
-                                        .skip((currentPage - 1) * totalItemsPerPage)
-                                        .limit(totalItemsPerPage)
+                                        .limit(limit)
                                         .sort(updatedAt)
         return data;
     },
-    listItemsHome: async (objWhere, updatedAt) => {
+    listItemsHome: async (objWhere, updatedAt, limit) => {
         let data = await schemaArticle.find({$or: objWhere})
                                         .limit(20)
                                         .sort(updatedAt)

@@ -1,6 +1,7 @@
 const mainName = "contact"
 const schemaContact 	= require(__path_schemas_backend + mainName);
 const nodemailer = require("nodemailer");
+const dotenv = require("dotenv");
 
 module.exports = {
     saveItems: async (params) =>{
@@ -17,29 +18,7 @@ module.exports = {
                                             .limit(totalItemsPerPage)
                                             .sort(updatedAt)
                 return data;
-},
-    showError:  (error) =>{
-        let html = ""
-        error.forEach((obj) =>{
-            html += `
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h5><i class="icon fas fa-exclamation-triangle"></i> Alert!</h5>
-                ${obj.msg}
-            </div>
-            `
-        })
-       return html
     },
-    showSuccess: (params) => {
-    if(params === undefined) return;
-    return `<div class="alert alert-success alert-dismissible">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-    <h5><i class="icon fas fa-check"></i> Alert!</h5>
-    ${params}
-    </div>`
-    },
-
     deleteItem: async (id) =>{
         let data = await schemaContact.deleteOne({_id: id})
         return
@@ -70,10 +49,6 @@ module.exports = {
         let data = await schemaContact.updateOne({_id: id}, item)
         return
     },
-    changePrice: async (id, price) =>{
-        let data = await schemaContact.updateOne({_id: id}, {price: price})
-        return
-    },
     mainMail: async function (params) {
         console.log(params)
         // Generate test SMTP service account from ethereal.email
@@ -87,8 +62,8 @@ module.exports = {
         //   port: 587,
         //   secure: false, // true for 465, false for other ports
           auth: {
-            user: "thinhnguyenxy04@gmail.com", // generated ethereal user
-            pass: "mupjqdrcyjxuvqpr", // generated ethereal password
+            user: `${process.env.EMAIL_SMTP}`, // generated ethereal user
+            pass: `${process.env.PASSWORD_SMTP}`, // generated ethereal password
           },
         });
       

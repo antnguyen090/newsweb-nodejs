@@ -3,6 +3,7 @@
 <%- include('./../../helpers/highlight'); -%>
 <%- include('./../../helpers/showcategory'); -%>
 <%- include('./../../helpers/showoptionbox'); -%>
+<%- include('./../../helpers/showsucess'); -%>
 
 
 <% 
@@ -12,7 +13,7 @@
 
 %>
 
-<%- inform %>
+<%- showSucess(inform.success) %>
 <div class="row mb-2">
     <div class="col-sm-6">
         <h1 class="m-0"><%= pageTitle %></h1>

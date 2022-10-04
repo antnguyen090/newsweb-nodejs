@@ -5,11 +5,6 @@
 <%- include('./../../helpers/shownewsarticle'); -%>
 <%- include('./../../helpers/pagination'); -%>
 
-
-
-
-
-
 <% 
     const collection = "index";
     const articlePhoto = "article"
@@ -95,12 +90,6 @@
                         </div>
                     </div>
                     <%- showNewsArticle(article, category, articlePhoto, numberPostLast) %>
-                    <div class="col-12">
-                        <ul class="pager">
-                            <%- paginationHelper(pagination, collection, keyword)  %>
-
-                        </ul>
-                    </div>
                 </div>
 
             </div>

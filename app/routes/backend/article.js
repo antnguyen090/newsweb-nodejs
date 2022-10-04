@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
+var util = require('util')
 
 const mainName = "article"
 const pageTitle = `Article Management`
@@ -11,8 +12,8 @@ const modelArticle = require(__path_model_backend + mainName);
 const schemaArticle = require(__path_schemas_backend + mainName);
 const schemaCategory = require(__path_schemas_backend + 'category');
 const notify = require(__path_configs + 'notify');
+const layout = __path_views_backend + 'backend';
 
-const ValidateProduct	= require(__path_validates_backend + mainName);
 const UtilsHelpers = require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
 const folderView = __path_views_backend + `/pages/${mainName}/`;
@@ -21,7 +22,8 @@ const FileHelpers = require(__path_helpers + 'file');
 const uploadThumb	 = FileHelpers.upload('thumb', `${mainName}`);
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
-	let category = await schemaCategory.find({status: 'active'})
+	try {
+		let category = await schemaCategory.find({status: 'active'})
     let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
@@ -33,7 +35,6 @@ router.get('(/status/:status)?', async (req, res, next) => {
         currentPage: parseInt(ParamsHelpers.getParam(req.query, 'page', 1)),
         pageRanges: 3
     };
-
     if (currentStatus !== 'all') objWhere.status = currentStatus;
     if (keyword !== '') objWhere.name = new RegExp(keyword, 'i');
     await schemaArticle.count(objWhere).then((data) => {
@@ -46,6 +47,7 @@ router.get('(/status/:status)?', async (req, res, next) => {
 											{updatedAt: 'desc'},
 											)
 	res.render(`${folderView}list`, {
+				layout,
 				pageTitle: pageTitle,
 				countItemsActive: data.filter(item => item.status === 'active'),
 				items: data,
@@ -54,15 +56,16 @@ router.get('(/status/:status)?', async (req, res, next) => {
 				currentStatus,
 				category: category,
 				keyword,
-				showError: "",
-				showSuccess: "",
-				inform: modelArticle.showSuccess(inform.success)
+				inform: inform
 			})
+	} catch (error) {
+		console.log(error)
+	}
 })
 
 router.post('(/option)', async (req, res, next) => {
-	let {id, field, isCheck} = req.body
 	try {
+		let {id, field, isCheck} = req.body
 		let data = await modelArticle.changeOption(id, field, isCheck)
 		res.send({success: true})
 	} catch (error) {
@@ -72,42 +75,47 @@ router.post('(/option)', async (req, res, next) => {
 
 // access FORM
 router.get('/form/(:id)?', async function (req, res, next) {
-	// let dataa = await schemaarticle().populate('articles')
-	// console.log(dataa)
-	let category = await schemaCategory.find({status:'active'})
-	let main = {pageTitle: pageTitle,
-	showError: "",
-	showSuccess: "",
-	categoryList: category,
-	}
-	if (req.params.id != undefined) {
-		schemaArticle.countDocuments({_id: req.params.id}, async function (err, count){ 
-			if(count>0){
-				let item = await modelArticle.getItemByID(req.params.id)
-				//document exists });
-				res.render(`${folderView}form`, {
-					main: main,
-					item: item[0],
-				});
+	try {
+		let inform = req.flash()
+		let category = await schemaCategory.find({status:'active'})
+		let main = {pageTitle: pageTitle,
+								categoryList: category,
+								inform: inform
+								}
+		if (req.params.id != undefined) {
+			schemaArticle.countDocuments({_id: req.params.id}, async function (err, count){ 
+				if(count>0){
+					let item = await modelArticle.getItemByID(req.params.id)
+					//document exists });
+					res.render(`${folderView}form`, {
+						main: main,
+						item: item[0],
+						layout,
+					});
+				} else {
+					res.redirect(linkIndex);
+				}
+			});   
 			} else {
-				res.redirect(linkIndex);
+					res.render(`${folderView}form`, {
+						main: main,
+						item: [],
+						layout,
+					});
 			}
-		});   
-    } else {
-        res.render(`${folderView}form`, {
-			main: main,
-			item: [],
-        });
-    }
+	} catch (error) {
+		console.log(error)
+	}
 });
 
 
 router.post('/save/(:id)?',
 	uploadThumb,
-	body('name').isLength({min: 5})
-		.withMessage('Have 5 letters')
-		.custom(async (val, {req}) => {
-			let paramId = await(req.params.id != undefined) ? req.params.id : 0
+	body('name')
+			.isLength({min: 5, max: 100})
+			.withMessage(util.format(notify.ERROR_NAME,5,100))
+			.custom(async (val, {req}) => {
+			let paramId = (req.params.id != undefined) ? req.params.id : 0
 			return await schemaArticle.find({name: val}).then(async user => {
 				let length = user.length
 				user.forEach((value, index) => {
@@ -116,26 +124,47 @@ router.post('/save/(:id)?',
 					
 				})
 				if (length > 0) {
-					return Promise.reject("Duplicated Name")
+					return Promise.reject(notify.ERROR_NAME_DUPLICATED)
 				}
-				return "true"
+				return
 		})}),
+	body('slug')
+		.isSlug()
+		.withMessage(notify.ERROR_SLUG)
+		.custom(async (val, {req}) => {
+			let paramId = (req.params.id != undefined) ? req.params.id : 0
+			return await schemaArticle.find({slug: val}).then(async user => {
+				let length = user.length
+				user.forEach((value, index) => {
+					if (value.id == paramId) 
+						length = length - 1;
+					
+				})
+				if (length > 0) {
+					return Promise.reject(notify.ERROR_SLUG_DUPLICATED)
+				}
+				return
+	})}),
+	body('editordata')
+		.not()
+		.isEmpty()
+		.withMessage(notify.ERROR_DESCRIPTION),
 	body('categoryId')
 		.custom(async (val, {req}) => {
 			if ( val == undefined) {
-				return Promise.reject("Category must be choose ")
+				return Promise.reject(notify.ERROR_CATEGORY)
 			} else {
 				try {
 					let data = await schemaCategory.findOne({_id: val, status:'active'});
 					return data;
 				} catch (error) {
-					return Promise.reject("Category is invalid")
+					return Promise.reject(notify.ERROR_CATEGORY_INVALID)
 				}
 			}
 		}),
 	body('ordering')
 		.isInt({min: 0, max: 99})
-		.withMessage('Ordering must be number from 0 to 99'),
+		.withMessage(util.format(notify.ERROR_ORDERING,0,99)),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
 	body('thumb').custom((value,{req}) => {
 		const {image_uploaded , image_old} = req.body;
@@ -148,17 +177,17 @@ router.post('/save/(:id)?',
 		return true;
 	}),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
+		try {
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
 				itemData = await schemaArticle.find({_id: req.params.id})
 			}
-			let errors = await validationResult(req)
+			let errors = validationResult(req)
 			if(!errors.isEmpty()) {
 				let category = await schemaCategory.find({status:'active'})
 				let main = {pageTitle: pageTitle,
-							showError: modelArticle.showError(errors.errors),
-							showSuccess: "",
+							showError: errors.errors,
 							categoryList: category,
 						}
 				if(req.file != undefined) FileHelpers.remove(`public/uploads/${mainName}/`, req.file.filename); // xóa tấm hình khi form không hợp lệ
@@ -166,12 +195,14 @@ router.post('/save/(:id)?',
 						res.render(`${folderView}form`, {
 							main: main,
 							item: itemData[0],
-							id: req.params.id
+							id: req.params.id,
+							layout,
 						})
 				} else {
 					res.render(`${folderView}form`, {
 						main: main,
 						item: req.body,
+						layout,
 					})
 				}
 				return
@@ -185,16 +216,14 @@ router.post('/save/(:id)?',
 					} 
 				}
 			}
-
-			try {
 				if (req.params.id !== undefined) {
 					await modelArticle.editItem(req.params.id, item)
-					req.flash('success', "Edit Item Successfully");
+					req.flash('success', notify.EDIT_SUCCESS);
 					res.redirect(linkIndex);
 				} else {
 					item.category = req.body.categoryId
 					let data = await modelArticle.saveItems(item)
-					req.flash('success', "Add Item Successfully");
+					req.flash('success', notify.ADD_SUCCESS);
 					res.redirect(linkIndex);
 				}
 			} catch (error) {
@@ -206,43 +235,52 @@ router.post('/save/(:id)?',
 
 // Delete
 router.post('/delete/(:status)?', async (req, res, next) => {
-    if (req.params.status === 'multi') {
-        let arrId = req.body.id.split(",")
-		let arrPhoto = req.body.img.split(",")
-		let deletePhoto = await arrPhoto.forEach((value)=>{
-			FileHelpers.remove(`public/uploads/${mainName}/`, value)
-		})
-        let data = await modelArticle.deleteItemsMulti(arrId);
-        res.send({success: true})
-    } else {
-        let id = req.body.id
-		let thumb = req.body.thumb
-		let removePhoto = await FileHelpers.remove(`public/uploads/${mainName}/`, thumb)
-        let data = await modelArticle.deleteItem(id);
-        res.send({success: true})
-    }
+	try {
+		if (req.params.status === 'multi') {
+			let arrId = req.body.id.split(",")
+			let arrPhoto = req.body.img.split(",")
+			let deletePhoto = await arrPhoto.forEach((value)=>{
+				FileHelpers.remove(`public/uploads/${mainName}/`, value)
+			})
+			let data = await modelArticle.deleteItemsMulti(arrId);
+			res.send({success: true})
+	} else {
+			let id = req.body.id
+			let thumb = req.body.thumb
+			let removePhoto = await FileHelpers.remove(`public/uploads/${mainName}/`, thumb)
+			let data = await modelArticle.deleteItem(id);
+			res.send({success: true})
+	}
+	} catch (error) {
+		console.log(error)
+	}
 });
 
 router.post('/change-status/(:status)?', async (req, res, next) => {
-    if (req.params.status === 'multi') {
-        let arrId = req.body.id.split(",")
-        let status = req.body.status
-        let data = await modelArticle.changeStatusItemsMulti(arrId, status);
-        res.send({success: true})
-    } else {
-        let {status, id} = req.body
-        status = (status == 'active') ? 'inactive' : 'active'
-        let changeStatus = await modelArticle.changeStatus(id, status)
-        res.send({success: true})
-    }
+	try {
+				if (req.params.status === 'multi') {
+						let arrId = req.body.id.split(",")
+						let status = req.body.status
+						let data = await modelArticle.changeStatusItemsMulti(arrId, status);
+						res.send({success: true})
+				} else {
+						let {status, id} = req.body
+						status = (status == 'active') ? 'inactive' : 'active'
+						let changeStatus = await modelArticle.changeStatus(id, status)
+						res.send({success: true})
+				}
+	} catch (error) {
+		console.log(error)
+	}
 });
 
 router.post('/change-ordering', 
 	body('ordering')
 		.isInt({min: 0, max: 99})
-		.withMessage('Ordering must be number from 0 to 99'), 
+		.withMessage(util.format(notify.ERROR_ORDERING,0,99)), 
 	async (req, res, next) => {
-		const errors = validationResult(req);
+		try {
+			const errors = validationResult(req);
 		if (! errors.isEmpty()) {
 			res.send({success: false, errors: errors})
 			return
@@ -250,22 +288,9 @@ router.post('/change-ordering',
 		let {ordering, id} = req.body
 		let changeStatus = await modelArticle.changeOrdering(id, ordering)
 		res.send({success: true})
-});
-
-router.post('/change-price', 
-	body('price')
-		.isInt({min: 0})
-		.withMessage('Price must be number from 0'), 
-	async (req, res, next) => {
-		const errors = validationResult(req);
-		if (! errors.isEmpty()) {
-			res.send({success: false, errors: errors})
-			return
+		} catch (error) {
+			console.log(error)
 		}
-		let {price, id} = req.body
-		let changeStatus = await modelArticle.changePrice(id, price)
-		res.send({success: true})
 });
-
 
 module.exports = router;

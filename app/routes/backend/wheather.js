@@ -2,15 +2,17 @@ var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
+var util = require('util')
+const fs = require('fs');
 
 const mainName = "wheather"
 const pageTitle = `Wheather Management`
 const systemConfig = require(__path_configs + 'system');
 const linkIndex = '/' + systemConfig.prefixAdmin + '/' + mainName;
-const modelCategory = require(__path_model_backend + mainName);
-const schemaCategory = require(__path_schemas_backend + mainName);
+const modelWheather = require(__path_model_backend + mainName);
+const schemaWheather = require(__path_schemas_backend + mainName);
 const notify = require(__path_configs + 'notify');
-const fs = require('fs');
+const layout = __path_views_backend + 'backend';
 
 const UtilsHelpers = require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
@@ -21,7 +23,8 @@ const upWheather         = 'public/wheatherfile/'
 
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
-    let inform = req.flash()
+	try {
+		let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
     let currentStatus = ParamsHelpers.getParam(req.params, 'status', 'all');
@@ -35,10 +38,10 @@ router.get('(/status/:status)?', async (req, res, next) => {
 
     if (currentStatus !== 'all') objWhere.status = currentStatus;
     if (keyword !== '') objWhere.name = new RegExp(keyword, 'i');
-    await schemaCategory.count(objWhere).then((data) => {
+    await schemaWheather.count(objWhere).then((data) => {
         pagination.totalItems = data;
     });
-			let data = await modelCategory.listItems(objWhere, 
+			let data = await modelWheather.listItems(objWhere, 
 				pagination.currentPage,
 				pagination.totalItemsPerPage,
 				{updatedAt: 'desc'},
@@ -52,25 +55,30 @@ router.get('(/status/:status)?', async (req, res, next) => {
 				pagination,
 				currentStatus,
 				keyword,
-				showError: "",
-				showSuccess: "",
-				inform: modelCategory.showSuccess(inform.success)
+				inform: inform,
+				layout
 			})
+	} catch (error) {
+		console.log(error)
+	}
 })
 
 // access FORM
 router.get('/form/(:id)?',  function (req, res, next) {
+	try {
+		let inform = req.flash()
 	let main = {pageTitle: pageTitle,
-	showError: "",
-	showSuccess: "",}
+							inform: inform
+	}
 	if (req.params.id != undefined) {
-		schemaCategory.countDocuments({_id: req.params.id}, async function (err, count){ 
+		schemaWheather.countDocuments({_id: req.params.id}, async function (err, count){ 
 			if(count>0){
-				let item = await modelCategory.getItemByID(req.params.id)
+				let item = await modelWheather.getItemByID(req.params.id)
 				//document exists });
 				res.render(`${folderView}form`, {
 					main: main,
 					item: item[0],
+					layout,
 				});
 			} else {
 				res.redirect(linkIndex);
@@ -80,17 +88,23 @@ router.get('/form/(:id)?',  function (req, res, next) {
         res.render(`${folderView}form`, {
 			main: main,
 			item: [],
+			layout
         });
     }
+	} catch (error) {
+		console.log(error)
+	}
 });
 
 
 router.post('/save/(:id)?',
-	body('name').isLength({min: 1})
-		.withMessage('Have 1 letters')
-		.custom(async (val, {req}) => {
-			let paramId = await(req.params.id != undefined) ? req.params.id : 0
-			return await schemaCategory.find({name: val}).then(async user => {
+		body('name')
+			.not()
+			.isEmpty()
+			.withMessage(notify.ERROR_NAME_EMPTY)
+			.custom(async (val, {req}) => {
+			let paramId = (req.params.id != undefined) ? req.params.id : 0
+			return await schemaWheather.find({name: val}).then(async user => {
 				let length = user.length
 				user.forEach((value, index) => {
 					if (value.id == paramId) 
@@ -98,35 +112,41 @@ router.post('/save/(:id)?',
 					
 				})
 				if (length > 0) {
-					return Promise.reject("Duplicated Name")
+					return Promise.reject(notify.ERROR_NAME_DUPLICATED)
 				}
-				return "true"
-		})}), 
+				return
+})}),
+		body('name')
+		.not()
+		.isEmpty()
+		.withMessage(notify.ERROR_API_EMPTY),
 	body('ordering')
-		.isInt({min: 0, max: 99})
-		.withMessage('Ordering must be number from 0 to 99'),
+			.isInt({min: 0, max: 99})
+			.withMessage(util.format(notify.ERROR_ORDERING,0,99)),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
-				itemData = await schemaCategory.find({_id: req.params.id})
+				itemData = await schemaWheather.find({_id: req.params.id})
 			}
 			let errors = await validationResult(req)
 			if(!errors.isEmpty()) {
 				let main = {pageTitle: pageTitle,
-							showError: modelCategory.showError(errors.errors),
-							showSuccess: "",}
+							showError: errors.errors,
+							}
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
 							main: main,
 							item: itemData[0],
-							id: req.params.id
+							id: req.params.id,
+							layout
 						})
 				} else {
 					res.render(`${folderView}form`, {
 						main: main,
 						item: req.body,
+						layout
 					})
 				}
 				return
@@ -134,12 +154,12 @@ router.post('/save/(:id)?',
             item.api = item.api.replaceAll("-","%20")
 			try {
 				if (req.params.id !== undefined) {
-					let data = await modelCategory.editItem(req.params.id, item)
-					req.flash('success', "Edit Item Successfully");
+					let data = await modelWheather.editItem(req.params.id, item)
+					req.flash('success', notify.EDIT_SUCCESS);
 					res.redirect(linkIndex);
 				} else {
-					let data = await modelCategory.saveItems(item);
-					req.flash('success', "Add Item Successfully");
+					let data = await modelWheather.saveItems(item);
+					req.flash('success', notify.ADD_SUCCESS);
 					res.redirect(linkIndex);
 				}
 			} catch (error) {
@@ -151,74 +171,70 @@ router.post('/save/(:id)?',
 
 // Delete
 router.post('/delete/(:status)?', async (req, res, next) => {
-    if (req.params.status === 'multi') {
-        let arrId = req.body.id.split(",")
-        let data = await modelCategory.deleteItemsMulti(arrId);
+	try {
+		if (req.params.status === 'multi') {
+			let arrId = req.body.id.split(",")
+			let data = await modelWheather.deleteItemsMulti(arrId);
 		let deleteWheatherFiles = await arrId.forEach((value)=>{
-			try {
-				fs.unlinkSync(`${upWheather}${value}`)
-				//file removed
-			} catch(err) {
-				console.error(err)
-			}
-		})
-        res.send({success: true})
-    } else {
-        let id = req.body.id
 		try {
-			fs.unlinkSync(`${upWheather}${id}`)
+			fs.unlinkSync(`${upWheather}${value}`)
 			//file removed
 		} catch(err) {
 			console.error(err)
 		}
-        let data = await modelCategory.deleteItem(id);
-        res.send({success: true})
-    }
+	})
+			res.send({success: true})
+	} else {
+			let id = req.body.id
+	try {
+		fs.unlinkSync(`${upWheather}${id}`)
+		//file removed
+	} catch(err) {
+		console.error(err)
+	}
+			let data = await modelWheather.deleteItem(id);
+			res.send({success: true})
+	}
+	} catch (error) {
+		console.log(error)
+	}
 });
 
 router.post('/change-status/(:status)?', async (req, res, next) => {
-    if (req.params.status === 'multi') {
-        let arrId = req.body.id.split(",")
-        let status = req.body.status
-        let data = await modelCategory.changeStatusItemsMulti(arrId, status);
-        res.send({success: true})
-    } else {
-        let {status, id} = req.body
-        status = (status == 'active') ? 'inactive' : 'active'
-        let changeStatus = await modelCategory.changeStatus(id, status)
-        res.send({success: true})
-    }
+	try {
+		if (req.params.status === 'multi') {
+			let arrId = req.body.id.split(",")
+			let status = req.body.status
+			let data = await modelWheather.changeStatusItemsMulti(arrId, status);
+			res.send({success: true})
+	} else {
+			let {status, id} = req.body
+			status = (status == 'active') ? 'inactive' : 'active'
+			let changeStatus = await modelWheather.changeStatus(id, status)
+			res.send({success: true})
+	}
+	} catch (error) {
+		console.log(error)
+	}
 });
 
 router.post('/change-ordering', 
 	body('ordering')
 		.isInt({min: 0, max: 99})
-		.withMessage('Ordering must be number from 0 to 99'), 
+		.withMessage(util.format(notify.ERROR_ORDERING,0,99)), 
 	async (req, res, next) => {
-		const errors = validationResult(req);
-		if (! errors.isEmpty()) {
-			res.send({success: false, errors: errors})
-			return
+		try {
+			const errors = validationResult(req);
+			if (! errors.isEmpty()) {
+				res.send({success: false, errors: errors})
+				return
+			}
+			let {ordering, id} = req.body
+			let changeStatus = await modelWheather.changeOrdering(id, ordering)
+			res.send({success: true})
+		} catch (error) {
+			console.log(error)
 		}
-		let {ordering, id} = req.body
-		let changeStatus = await modelCategory.changeOrdering(id, ordering)
-		res.send({success: true})
 });
-
-router.post('/change-price', 
-	body('price')
-		.isInt({min: 0})
-		.withMessage('Price must be number from 0'), 
-	async (req, res, next) => {
-		const errors = validationResult(req);
-		if (! errors.isEmpty()) {
-			res.send({success: false, errors: errors})
-			return
-		}
-		let {price, id} = req.body
-		let changeStatus = await modelCategory.changePrice(id, price)
-		res.send({success: true})
-});
-
 
 module.exports = router;

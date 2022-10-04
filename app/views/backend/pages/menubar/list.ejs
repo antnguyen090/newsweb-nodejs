@@ -1,13 +1,14 @@
 <%- include('./../../helpers/status'); -%>
 <%- include('./../../helpers/pagination'); -%>
 <%- include('./../../helpers/highlight'); -%>
+<%- include('./../../helpers/showsucess'); -%>
 
 <% 
 	const collection = "menubar";
 	const linkPrefix = "/" + systemConfig.prefixAdmin + `/${collection}/`;
 %>
 
-<%- inform %>
+<%- showSucess(inform.success) %>
 <div class="row mb-2">
     <div class="col-sm-6">
         <h1 class="m-0"><%= pageTitle %></h1>

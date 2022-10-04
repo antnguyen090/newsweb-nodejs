@@ -1,9 +1,11 @@
+<%- include('./../../helpers/showerror'); -%>
+
 <% 
 	const collection = "menubar";
 	const linkPrefix = "/" + systemConfig.prefixAdmin + `/${collection}/`;
 %>
 
-<%- main.showError %>
+<%- showError(main.showError) %>
 <div class="card card-info card-outline">
     <form action="<%= linkPrefix %>save/<%= item.id %>" method="POST" class="mb-0">
         <div class="card-body">

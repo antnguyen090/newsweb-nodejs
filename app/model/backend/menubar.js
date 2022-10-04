@@ -17,28 +17,6 @@ module.exports = {
                                             .sort(updatedAt)
                 return data;
         },
-    showError:  (error) =>{
-        let html = ""
-        error.forEach((obj) =>{
-            html += `
-            <div class="alert alert-warning alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h5><i class="icon fas fa-exclamation-triangle"></i> Alert!</h5>
-                ${obj.msg}
-            </div>
-            `
-        })
-       return html
-    },
-    showSuccess: (params) => {
-    if(params === undefined) return;
-    return `<div class="alert alert-success alert-dismissible">
-    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-    <h5><i class="icon fas fa-check"></i> Alert!</h5>
-    ${params}
-    </div>`
-    },
-
     deleteItem: async (id) =>{
         let data = await schemaMenuBar.deleteOne({_id: id})
         return

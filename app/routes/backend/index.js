@@ -11,6 +11,4 @@ router.use('/wheather', require('./wheather'));
 router.use('/contact', require('./contact'));
 router.use('/', require('./dashboard'));
 
-
-
 module.exports = router;

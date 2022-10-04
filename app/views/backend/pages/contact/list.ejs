@@ -1,6 +1,7 @@
 <%- include('./../../helpers/status'); -%>
 <%- include('./../../helpers/pagination'); -%>
 <%- include('./../../helpers/highlight'); -%>
+<%- include('./../../helpers/showsucess'); -%>
 
 <% 
 	const collection = "contact";
@@ -9,7 +10,7 @@
 
 %>
 
-<%- inform %>
+<%- showSucess(inform.success) %>
 <div class="row mb-2">
     <div class="col-sm-6">
         <h1 class="m-0"><%= pageTitle %></h1>
@@ -90,7 +91,7 @@
 						<th class="text-center">#</a></th>
 						<th class="text-center">Name</a></th>
 						<th class="text-center">Subject</a></th>
-						<th class="text-center">Status</a></th>
+						<th class="text-center">Process</a></th>
 						<th class="text-center">Ordering</a></th>
 						<th class="text-center">Action</th>
 					</tr>

@@ -34,7 +34,39 @@
         document.getElementById("realtimeClock").innerHTML = currentTime;
     }, 1000);
 
+    var pathname = window.location.pathname.split("/")[1]
+    $(`#navbarCollapse a[href="${pathname}"]`).addClass("active")
 
+    const divs = document.querySelectorAll('article > div');
+
+    document.querySelector('#cityName').addEventListener('change', () => {
+    let id = event.target.value;  
+    //if selectedIndex = 0, default is selected so all divs will be displayed, otherwise all divs will be removed
+    divs.forEach(div =>{
+        let compare = $(div).attr('id')
+        if (compare == id){
+            div.style.display = 'block'
+        } else {
+            div.style.display = 'none'
+        }
+    });
+    //the coresponding div to the selected option will be displayed
+    })
+    
+
+    let showTitlePage = () =>{
+        let urlPath = window.location.pathname.split("/")[1]
+        let titlePage = document.title
+        if (urlPath==''){
+            urlPath='index'
+        }
+        let text = $(`nav.navbar a[href='/${urlPath}']`).text()
+        if(text == '') text = 'Trang Lỗi'
+        let textPage  = titlePage + " | " + text
+        $(document).attr("title", textPage) 
+        $(`nav.navbar a[href='/${urlPath}']`).addClass('active')
+    }
+    showTitlePage()
     // Dropdown on mouse hover
     $(document).ready(function () {
         function toggleNavbarMethod() {
@@ -214,26 +246,6 @@
             }
         }
     });
-    var pathname = window.location.pathname.split("/")[1]
-    $(`#navbarCollapse a[href="${pathname}"]`).addClass("active")
-
-    const divs = document.querySelectorAll('article > div');
-
-    document.querySelector('#cityName').addEventListener('change', () => {
-    let id = event.target.value;  
-    //if selectedIndex = 0, default is selected so all divs will be displayed, otherwise all divs will be removed
-    divs.forEach(div =>{
-        let compare = $(div).attr('id')
-        if (compare == id){
-            div.style.display = 'block'
-        } else {
-            div.style.display = 'none'
-        }
-    });
-    //the coresponding div to the selected option will be displayed
-
-    })
-    let urlPath = window.location.pathname.split("/")[1]
-    $(`nav.navbar a[href='/${urlPath}']`).addClass('active')
+    
 })(jQuery);
 

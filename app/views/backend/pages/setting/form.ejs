@@ -1,15 +1,18 @@
+<%- include('./../../helpers/showerror'); -%>
+<%- include('./../../helpers/showsucess'); -%>
+
 <% 
     const collection="setting" ; 
     const linkPrefix="/" + systemConfig.prefixAdmin + `/${collection}/`; 
     const linkThumb="/" + "uploads" + `/${collection}/`; 
 %>
-
-    <%- main.showError %>
+        <%- showSucess(main.inform.success) %>
         <div class="card card-info card-outline">
-            <form action="<%= linkPrefix %>save/6331791e087d00adf830604d" method="POST" class="mb-0">
+            <form action="<%= linkPrefix %>save/<%=settingObj.id%>" method="POST" class="mb-0" enctype="multipart/form-data">
                 <div class="card-body">
                     <%= main.pageTitle %>
                         <div class="col-12 col-md-10 col-sm-10 mt-2 mx-auto">
+                            <%- showError(main.showError) %>
                             <div class="card card-primary card-tabs">
                                 <div class="card-header p-0 pt-1">
                                     <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
@@ -36,17 +39,45 @@
                                                     <input type="text" id="title-input-form" name="title" value="<%= item.title %>" class="form-control form-control-sm"></div>
                                             </div>
                                             <div class="form-group row uploadImage">
-                                                <label for="thumb" class="col-sm-2 col-form-label text-sm-right">Logo</label>
+                                                <label for="logoLarge" class="col-sm-2 col-form-label text-sm-right">Upload Large Logo</label>
                                                 <div class="col-xs-12 col-sm-8">
-                                                    <input id="ImageMedias" name="thumb" type="file" class="custom-file-input">
-                                                    <div id="divImageMediaPreview">
+                                                    <input id="ImageMediasLarge" name="logoLarge" type="file" class="custom-file-input" value="LogoLarge">
+                                                    <div id="divImageMediaPreviewLogoLarge">
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="form-group row ckeditor">
-                                                <label for="uploaded" class="col-sm-2 col-form-label text-sm-right">Image Uploaded</label>
-                                            <% if (item.thumb != undefined) { %>
-                                                <img style="width: 40%; padding: 10px" src="<%= linkThumb %><%= item.thumb%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <label for="logoLarge" class="col-sm-2 col-form-label text-sm-right">Large Logo</label>
+                                            <% if (item.logolarge != undefined) { %>
+                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logolarge%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <%}  %>
+                                            </div>
+                                            <div class="form-group row uploadImage">
+                                                <label for="logoSmall" class="col-sm-2 col-form-label text-sm-right">Upload Small Logo</label>
+                                                <div class="col-xs-12 col-sm-8">
+                                                    <input id="ImageMediasSmall" name="logoSmall" type="file" class="custom-file-input" value="LogoSmall">
+                                                    <div id="divImageMediaPreviewLogoSmall">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row ckeditor">
+                                                <label for="logoSmall" class="col-sm-2 col-form-label text-sm-right">Small Logo</label>
+                                            <% if (item.logosmall != undefined) { %>
+                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logosmall%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <%}  %>
+                                            </div>
+                                            <div class="form-group row uploadImage">
+                                                <label for="logoTitle" class="col-sm-2 col-form-label text-sm-right">Upload Logo Title</label>
+                                                <div class="col-xs-12 col-sm-8">
+                                                    <input id="ImageMediasTitle" name="logoTitle" type="file" class="custom-file-input" value="LogoTitle">
+                                                    <div id="divImageMediaPreviewLogoTitle">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row ckeditor">
+                                                <label for="logoTitle" class="col-sm-2 col-form-label text-sm-right">Title Logo</label>
+                                            <% if (item.logotitle != undefined) { %>
+                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logotitle%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
                                                 <%}  %>
                                             </div>
                                             <div class="form-group row">
@@ -131,6 +162,12 @@
                         </div>
                 </div>
                 <div class="card-footer">
+                    <input name="image_old_large" value="<%= item.logolarge%>" type="hidden">
+				    <input name="image_uploaded_large" value="" type="hidden" id="image_uploaded_large">
+                    <input name="image_old_small" value="<%= item.logosmall%>" type="hidden">
+				    <input name="image_uploaded_small" value="" type="hidden" id="image_uploaded_small">
+                    <input name="image_old_title" value="<%= item.logotitle%>" type="hidden">
+				    <input name="image_uploaded_title" value="" type="hidden" id="image_uploaded_title">
                     <div class="col-12 col-sm-8 offset-sm-2">
                         <button type="submit" class="btn btn-sm btn-success mr-1">
                             Submit</button>
@@ -148,12 +185,30 @@
         <!-- Summernote -->
         <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>
         <script>
-            ImageMedias.onchange = evt => {
-                const [file] = ImageMedias.files
+            ImageMediasLarge.onchange = evt => {
+                const [file] = ImageMediasLarge.files
                 if (file) {
-                    image_uploaded.setAttribute('value', 'uploaded')
+                    image_uploaded_large.setAttribute('value', 'uploaded')
                 } else {
-                    image_uploaded.setAttribute('value', '')
+                    image_uploaded_large.setAttribute('value', '')
+                }
+            }
+
+            ImageMediasSmall.onchange = evt => {
+                const [file] = ImageMediasSmall.files
+                if (file) {
+                    image_uploaded_small.setAttribute('value', 'uploaded')
+                } else {
+                    image_uploaded_small.setAttribute('value', '')
+                }
+            }
+
+            ImageMediasTitle.onchange = evt => {
+                const [file] = ImageMediasTitle.files
+                if (file) {
+                    image_uploaded_title.setAttribute('value', 'uploaded')
+                } else {
+                    image_uploaded_title.setAttribute('value', '')
                 }
             }
         </script>

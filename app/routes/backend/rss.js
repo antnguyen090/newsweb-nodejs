@@ -3,6 +3,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 const {body, validationResult} = require('express-validator');
 const fs = require('fs');
+var util = require('util')
 
 const mainName = "rss"
 const pageTitle = `RSS Management`
@@ -11,8 +12,8 @@ const linkIndex = '/' + systemConfig.prefixAdmin + '/' + mainName;
 const modelRSS = require(__path_model_backend + mainName);
 const schemaRSS = require(__path_schemas_backend + mainName);
 const notify = require(__path_configs + 'notify');
+const layout = __path_views_backend + 'backend';
 
-const ValidateProduct	= require(__path_validates_backend + mainName);
 const UtilsHelpers = require(__path_helpers + 'utils');
 const ParamsHelpers = require(__path_helpers + 'params');
 const folderView = __path_views_backend + `/pages/${mainName}/`;
@@ -21,7 +22,8 @@ const uploadThumb	 = FileHelpers.upload('thumb', `${mainName}`);
 const upRSS         = 'public/rssfile/'
 // List items
 router.get('(/status/:status)?', async (req, res, next) => {
-    let inform = req.flash()
+	try {
+		let inform = req.flash()
     let objWhere = {};
     let keyword = ParamsHelpers.getParam(req.query, 'keyword', '');
     let currentStatus = ParamsHelpers.getParam(req.params, 'status', 'all');
@@ -52,42 +54,51 @@ router.get('(/status/:status)?', async (req, res, next) => {
 				pagination,
 				currentStatus,
 				keyword,
-				showError: "",
-				showSuccess: "",
-				inform: modelRSS.showSuccess(inform.success)
+				inform: inform,
+				layout,
 			})
+	} catch (error) {
+		console.log(error)
+	}
 })
 
 // access FORM
 router.get('/form/(:id)?',  function (req, res, next) {
-	let main = {pageTitle: pageTitle,
-	showError: "",
-	showSuccess: "",}
-	if (req.params.id != undefined) {
-		schemaRSS.countDocuments({_id: req.params.id}, async function (err, count){ 
-			if(count>0){
-				let item = await modelRSS.getItemByID(req.params.id)
-				//document exists });
-				res.render(`${folderView}form`, {
+		try {
+						let inform = req.flash()
+					let main = {pageTitle: pageTitle,
+											inform}
+				if (req.params.id != undefined) {
+					schemaRSS.countDocuments({_id: req.params.id}, async function (err, count){ 
+						if(count>0){
+							let item = await modelRSS.getItemByID(req.params.id)
+							//document exists });
+							res.render(`${folderView}form`, {
+								main: main,
+								item: item[0],
+								layout,
+							});
+						} else {
+							res.redirect(linkIndex);
+						}
+							});   
+				} else {
+						res.render(`${folderView}form`, {
 					main: main,
-					item: item[0],
-				});
-			} else {
-				res.redirect(linkIndex);
-			}
-		});   
-    } else {
-        res.render(`${folderView}form`, {
-			main: main,
-			item: [],
-        });
-    }
+					item: [],
+					layout,
+						});
+				}
+		} catch (error) {
+			console.log(error)
+		}
 });
 
 
 router.post('/save/(:id)?',
-	body('name').isLength({min: 5})
-		.withMessage('Have 5 letters')
+	body('name')
+		.isLength({min: 5, max: 100})
+		.withMessage(util.format(notify.ERROR_NAME,5,100))
 		.custom(async (val, {req}) => {
 			let paramId = await(req.params.id != undefined) ? req.params.id : 0
 			return await schemaRSS.find({name: val}).then(async user => {
@@ -95,18 +106,42 @@ router.post('/save/(:id)?',
 				user.forEach((value, index) => {
 					if (value.id == paramId) 
 						length = length - 1;
+				})
+				if (length > 0) {
+					return Promise.reject(notify.ERROR_NAME_DUPLICATED)
+				}
+				return
+		})}),
+	body('link')
+		.isURL()
+		.withMessage(notify.ERROR_RSS_URL),
+	body('source')
+		.not()
+		.isEmpty()
+		.withMessage(notify.ERROR_SOURCE),
+	body('slug')
+		.isSlug()
+		.withMessage(notify.ERROR_SLUG)
+		.custom(async (val, {req}) => {
+			let paramId = (req.params.id != undefined) ? req.params.id : 0
+			return await schemaRSS.find({slug: val}).then(async user => {
+				let length = user.length
+				user.forEach((value, index) => {
+					if (value.id == paramId) 
+						length = length - 1;
 					
 				})
 				if (length > 0) {
-					return Promise.reject("Duplicated Name")
+					return Promise.reject(notify.ERROR_SLUG_DUPLICATED)
 				}
-				return "true"
-		})}), 
+				return
+	})}),
 	body('ordering')
 		.isInt({min: 0, max: 99})
-		.withMessage('Ordering must be number from 0 to 99'),
+		.withMessage(util.format(notify.ERROR_ORDERING,0,99)),
 	body('status').not().isIn(['novalue']).withMessage(notify.ERROR_STATUS),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
+		try {
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
@@ -115,94 +150,97 @@ router.post('/save/(:id)?',
 			let errors = await validationResult(req)
 			if(!errors.isEmpty()) {
 				let main = {pageTitle: pageTitle,
-							showError: modelRSS.showError(errors.errors),
-							showSuccess: "",}
+							showError: errors.errors,
+							}
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
 							main: main,
 							item: itemData[0],
-							id: req.params.id
+							id: req.params.id,
+							layout
 						})
 				} else {
 					res.render(`${folderView}form`, {
 						main: main,
 						item: req.body,
+						layout
 					})
 				}
 				return
 			}
-
-			try {
 				if (req.params.id !== undefined) {
 					let data = await modelRSS.editItem(req.params.id, item)
-					req.flash('success', "Edit Item Successfully");
+					req.flash('success', notify.EDIT_SUCCESS);
 					res.redirect(linkIndex);
 				} else {
 					let data = await modelRSS.saveItems(item);
-					req.flash('success', "Add Item Successfully");
+					req.flash('success', notify.ADD_SUCCESS);
 					res.redirect(linkIndex);
 				}
-			} catch (error) {
-				console.log(error)
-			}
+		} catch (error) {
+			console.log(error)
+		}	
 });
 
 
 
 // Delete
 router.post('/delete/(:status)?', async (req, res, next) => {
-    if (req.params.status === 'multi') {
-        let arrId = req.body.id.split(",")
-        let data = await modelRSS.deleteItemsMulti(arrId);
-		let deleteRSSfiles = await arrId.forEach((value)=>{
-			try {
-				fs.unlinkSync(`${upRSS}${value}`)
-				//file removed
-			} catch(err) {
-				console.error(err)
+	try {
+		if (req.params.status === 'multi') {
+			let arrId = req.body.id.split(",")
+			let data = await modelRSS.deleteItemsMulti(arrId);
+			let deleteRSSfiles = await arrId.forEach((value)=>{
+				let path = `${upRSS}${value}`
+				if (fs.existsSync(path)) fs.unlinkSync(path)
+			})
+			res.send({success: true})
+			} else {
+					let id = req.body.id
+					let data = await modelRSS.deleteItem(id);
+					if (fs.existsSync(`${upRSS}${id}`)) fs.unlinkSync(`${upRSS}${id}`)
+					res.send({success: true})
 			}
-		})
-        res.send({success: true})
-    } else {
-        let id = req.body.id
-        let data = await modelRSS.deleteItem(id);
-		try {
-			fs.unlinkSync(`${upRSS}${id}`)
-			//file removed
-		} catch(err) {
-			console.error(err)
+		} catch (error) {
+				console.log(error)
 		}
-        res.send({success: true})
-    }
 });
 
 router.post('/change-status/(:status)?', async (req, res, next) => {
-    if (req.params.status === 'multi') {
-        let arrId = req.body.id.split(",")
-        let status = req.body.status
-        let data = await modelRSS.changeStatusItemsMulti(arrId, status);
-        res.send({success: true})
-    } else {
-        let {status, id} = req.body
-        status = (status == 'active') ? 'inactive' : 'active'
-        let changeStatus = await modelRSS.changeStatus(id, status)
-        res.send({success: true})
-    }
+	try {
+		if (req.params.status === 'multi') {
+			let arrId = req.body.id.split(",")
+			let status = req.body.status
+			let data = await modelRSS.changeStatusItemsMulti(arrId, status);
+			res.send({success: true})
+	} else {
+			let {status, id} = req.body
+			status = (status == 'active') ? 'inactive' : 'active'
+			let changeStatus = await modelRSS.changeStatus(id, status)
+			res.send({success: true})
+	}
+	} catch (error) {
+		 console.log(error)
+	}
 });
 
 router.post('/change-ordering', 
 	body('ordering')
-		.isInt({min: 0, max: 99})
-		.withMessage('Ordering must be number from 0 to 99'), 
+		.isInt({min:0, max:99})
+		.withMessage(util.format(notify.ERROR_ORDERING,0,99)), 
 	async (req, res, next) => {
-		const errors = validationResult(req);
-		if (! errors.isEmpty()) {
-			res.send({success: false, errors: errors})
-			return
+		try {
+			const errors = validationResult(req);
+			if (! errors.isEmpty()) {
+				res.send({success: false, errors: errors})
+				return
+			}
+			let {ordering, id} = req.body
+			let changeStatus = await modelRSS.changeOrdering(id, ordering)
+			res.send({success: true})
+		} catch (error) {
+			console.log(error)
 		}
-		let {ordering, id} = req.body
-		let changeStatus = await modelRSS.changeOrdering(id, ordering)
-		res.send({success: true})
 });
 
 

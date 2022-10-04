@@ -1,0 +1,90 @@
+<%
+    paginationHelperRss = (paginationObj, type) => {
+            let totalItems          = paginationObj.totalItems;
+            let totalItemsPerPage   = paginationObj.totalItemsPerPage;
+            let totalPages          = Math.ceil(totalItems/totalItemsPerPage);
+            let currentPage         = paginationObj.currentPage;
+            let pageRanges          = paginationObj.pageRanges;
+            let xhtmlPagination     = '';
+            let to                  = totalItemsPerPage * currentPage;
+            let from                = to - totalItemsPerPage + 1;
+            if(to > totalItems) to  = totalItems;
+            if(totalPages > 1) {
+                let xhtmlStart = '', xhtmlPrevious = '', xhtmlPages = '', xhtmlNext = '' , xhtmlEnd = '';
+                let link       =   type  ;
+                link += '?page=';
+                    if(currentPage > 1) {
+                            xhtmlStart = `
+                                <li class="pager__item pager__item--prev"><a class="pager__link" href="/${link}1"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewbox="0 0 8 12">
+                                    <g fill="none" fill-rule="evenodd">
+                                        <path fill="#33313C" d="M7.41 1.41L6 0 0 6l6 6 1.41-1.41L2.83 6z"></path>
+                                    </g>
+                                </svg><svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewbox="0 0 8 12">
+                                    <g fill="none" fill-rule="evenodd">
+                                        <path fill="#33313C" d="M7.41 1.41L6 0 0 6l6 6 1.41-1.41L2.83 6z"></path>
+                                    </g>
+                                </svg></a></li>
+                            `;
+                            xhtmlPrevious = `
+                                <li class="pager__item pager__item--prev"><a class="pager__link" href="/${link}${currentPage-1}"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewbox="0 0 8 12">
+                                    <g fill="none" fill-rule="evenodd">
+                                        <path fill="#33313C" d="M7.41 1.41L6 0 0 6l6 6 1.41-1.41L2.83 6z"></path>
+                                    </g>
+                                </svg></a></li>
+                            `;
+                }
+    
+                if(currentPage < totalPages){
+                    xhtmlEnd = `
+                        <li class="pager__item pager__item--next"><a class="pager__link" href="/${link}${totalPages}"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewbox="0 0 8 12">
+                            <g fill="none" fill-rule="evenodd">
+                                <path fill="#33313C" d="M7.41 1.41L6 0 0 6l6 6 1.41-1.41L2.83 6z"></path>
+                            </g>
+                        </svg><svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewbox="0 0 8 12">
+                            <g fill="none" fill-rule="evenodd">
+                                <path fill="#33313C" d="M7.41 1.41L6 0 0 6l6 6 1.41-1.41L2.83 6z"></path>
+                            </g>
+                        </svg></a>
+                        </li>
+                    `;
+                    xhtmlNext = `
+                                <li class="pager__item pager__item--next"><a class="pager__link" href="/${link}${currentPage+1}"><svg xmlns="http://www.w3.org/2000/svg" width="8" height="12" viewbox="0 0 8 12">
+                                    <g fill="none" fill-rule="evenodd">
+                                        <path fill="#33313C" d="M7.41 1.41L6 0 0 6l6 6 1.41-1.41L2.83 6z"></path>
+                                    </g>
+                                </svg></a>
+                                </li>
+                    `;
+                }
+    
+                let middle = Math.ceil(pageRanges/2);
+                let min = currentPage - middle + 1;
+    
+                let max = min + pageRanges - 1;
+                if(min <= 1){
+                    min = 1;
+                    max = pageRanges;
+                }
+    
+                if(max >= totalPages){  // 3
+                    max = totalPages;
+                    min = ((max - pageRanges + 1) >= 1) ? (max - pageRanges + 1) : 1; 
+                }
+                
+                for(let i = min; i <= max; i++){
+                    if(i == currentPage) {
+                        xhtmlPages += `<li class="pager__item active"><a class="pager__link">${i}</a></li>`;
+                    } else {
+                        xhtmlPages += `<li class="pager__item"><a class="pager__link" href="/${link}${i}">${i}</a></li>`;
+                    }
+                }
+    
+                xhtmlPagination =  xhtmlStart + xhtmlPrevious + xhtmlPages + xhtmlNext + xhtmlEnd  ;
+            }
+            return `
+                    ${xhtmlPagination}
+           `;
+        }
+
+%>
+
