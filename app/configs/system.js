@@ -1,5 +1,5 @@
 
 module.exports = {
     prefixAdmin: 'adminTTT',
-    env: 'production', // production dev
+    env: 'dev', // production dev
 };

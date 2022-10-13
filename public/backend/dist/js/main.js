@@ -18,9 +18,12 @@ $( document ).ready( async function() {
         "hideMethod": "fadeOut"
       }
     let notify = listNotify()
-    var pathname = window.location.pathname
-    $(`ul.nav-sidebar > li > a[href="${pathname}"]`).addClass('active');
-    
+    var arrayPath = window.location.pathname.split("/")
+    var adminUrl = arrayPath[1]
+    var pathname = arrayPath[2]
+    if (pathname == '') pathname = "dashboard"
+    $(`ul.nav-sidebar > li > a[href="/${adminUrl}/${pathname}"]`).addClass("active")
+
     showPreview = (FileList,value) => {
         if (typeof (FileReader) != "undefined") {
             var dvPreview = $(`#divImageMediaPreview${value}`);
@@ -60,6 +63,11 @@ $( document ).ready( async function() {
         let value = e.target.getAttribute('value')
         showPreview($(this)[0].files,value);
     });
+    $("#ImageMediasBanner").change(function (e) {
+        let value = e.target.getAttribute('value')
+        showPreview($(this)[0].files,value);
+    });
+
     function ChangeToSlug(text)
         {
             //Đổi chữ hoa thành chữ thường

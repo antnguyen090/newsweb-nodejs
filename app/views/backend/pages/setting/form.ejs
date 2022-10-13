@@ -49,7 +49,7 @@
                                             <div class="form-group row ckeditor">
                                                 <label for="logoLarge" class="col-sm-2 col-form-label text-sm-right">Large Logo</label>
                                             <% if (item.logolarge != undefined) { %>
-                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logolarge%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <img style="width: 15%; padding: 10px" src="<%= linkThumb %><%= item.logolarge%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
                                                 <%}  %>
                                             </div>
                                             <div class="form-group row uploadImage">
@@ -63,7 +63,7 @@
                                             <div class="form-group row ckeditor">
                                                 <label for="logoSmall" class="col-sm-2 col-form-label text-sm-right">Small Logo</label>
                                             <% if (item.logosmall != undefined) { %>
-                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logosmall%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <img style="width: 15%; padding: 10px" src="<%= linkThumb %><%= item.logosmall%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
                                                 <%}  %>
                                             </div>
                                             <div class="form-group row uploadImage">
@@ -77,7 +77,21 @@
                                             <div class="form-group row ckeditor">
                                                 <label for="logoTitle" class="col-sm-2 col-form-label text-sm-right">Title Logo</label>
                                             <% if (item.logotitle != undefined) { %>
-                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logotitle%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <img style="width: 15%; padding: 10px" src="<%= linkThumb %><%= item.logotitle%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
+                                                <%}  %>
+                                            </div>
+                                            <div class="form-group row uploadImage">
+                                                <label for="logoBanner" class="col-sm-2 col-form-label text-sm-right">Upload Logo Banner</label>
+                                                <div class="col-xs-12 col-sm-8">
+                                                    <input id="ImageMediasBanner" name="logoBanner" type="file" class="custom-file-input" value="LogoBanner">
+                                                    <div id="divImageMediaPreviewLogoBanner">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row ckeditor">
+                                                <label for="logoBanner" class="col-sm-2 col-form-label text-sm-right">Banner Logo</label>
+                                            <% if (item.logobanner != undefined) { %>
+                                                <img style="width: 30%; padding: 10px" src="<%= linkThumb %><%= item.logobanner%>" alt="thumb" onerror="this.onerror=null;this.src='<%= linkThumb %>/no-image-found.jpg'">
                                                 <%}  %>
                                             </div>
                                             <div class="form-group row">
@@ -168,6 +182,8 @@
 				    <input name="image_uploaded_small" value="" type="hidden" id="image_uploaded_small">
                     <input name="image_old_title" value="<%= item.logotitle%>" type="hidden">
 				    <input name="image_uploaded_title" value="" type="hidden" id="image_uploaded_title">
+                    <input name="image_old_banner" value="<%= item.logobanner%>" type="hidden">
+				    <input name="image_uploaded_banner" value="" type="hidden" id="image_uploaded_banner">
                     <div class="col-12 col-sm-8 offset-sm-2">
                         <button type="submit" class="btn btn-sm btn-success mr-1">
                             Submit</button>
@@ -209,6 +225,15 @@
                     image_uploaded_title.setAttribute('value', 'uploaded')
                 } else {
                     image_uploaded_title.setAttribute('value', '')
+                }
+            }
+
+            ImageMediasBanner.onchange = evt => {
+                const [file] = ImageMediasBanner.files
+                if (file) {
+                    image_uploaded_banner.setAttribute('value', 'uploaded')
+                } else {
+                    image_uploaded_banner.setAttribute('value', '')
                 }
             }
         </script>

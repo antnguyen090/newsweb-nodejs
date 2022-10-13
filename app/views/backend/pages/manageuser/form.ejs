@@ -3,7 +3,7 @@
 <%- include('./../../helpers/showerror'); -%>
 
 <% 
-	const collection = "article";
+	const collection = "manageuser";
 	const linkPrefix = "/" + systemConfig.prefixAdmin + `/${collection}/`;
 	const linkThumb = "/" + "uploads" + `/${collection}/`;
 %>
@@ -21,7 +21,7 @@
                 <div class="form-group row">
                     <label for="categoryId" class="col-sm-2 col-form-label text-sm-right required">Category</label>
                     <div class="col-xs-12 col-sm-8">
-                        <select name="categoryId" id="input-category" class="form-control form-control-sm">
+                        <select name="group" id="input-category" class="form-control form-control-sm">
                             <%- showCategoryList(main.categoryList) %>
                         </select>
                     </div>
@@ -51,30 +51,7 @@
                             <div class="form-group row">
                                 <label for="option" class="col-sm-2 col-form-label text-sm-right required">Option</label>
                                 <div class="col-xs-12 col-sm-8">
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" name="slider" id="slider" 
-                                                value="true" 
-                                                <%= (item.slider == true) ? 'checked' : '' %> >
-                                        <label for="slider" class="custom-control-label">Show Slider</label>
-                                        </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" name="toppost" id="toppost" 
-                                                value="true" 
-                                                <%= (item.toppost == true) ? 'checked' : '' %> >
-                                        <label for="toppost" class="custom-control-label">Show Toppost</label>
-                                    </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox"  name="breakingnews" id="breakingnews" 
-                                                value="true" 
-                                                <%= (item.breakingnews == true) ? 'checked' : '' %> >
-                                        <label for="breakingnews" class="custom-control-label">Show Breaking News</label>
-                                        </div>
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" name="fearture"  id="fearture" 
-                                                value="true"
-                                                <%= (item.fearture == true) ? 'checked' : '' %> >
-                                        <label for="fearture" class="custom-control-label">Show Featured News </label>
-                                    </div>
+									<%- showOptionBox(item.id, item.slider, item.toppost, item.breakingnews, item.fearture)  %>
                                 </div>
                             </div>
                             <div class="form-group row uploadImage">

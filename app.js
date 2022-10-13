@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan'); //save erros
 var flash        = require('req-flash');
 var fs = require('fs')
+const passport = require('passport')
 
 // const helmet = require("helmet");
 const { body, validationResult } = require('express-validator');
@@ -32,6 +33,8 @@ global.__path_schemas_frontend   = __path_app + pathConfig.folder_schemas_fronte
 global.__path_validates_frontend = __path_app + pathConfig.folder_validates_frontend + '/';
 global.__path_views_frontend     = __path_app + pathConfig.folder_views_frontend + '/';
 global.__path_model_frontend   = __path_app + pathConfig.folder_model_frontend + '/';
+global.__path_middleware   = __path_app + pathConfig.folder_middleware + '/';
+
 
 global.__path_public      = __base + pathConfig.folder_public + '/';
 global.__path_uploads     = __path_public + pathConfig.folder_uploads + '/';
@@ -39,7 +42,6 @@ const systemConfig = require(__path_configs + 'system');
 const layoutFrontEnd	     = __path_views_frontend + 'frontend';
 
 var app = express();
-
 dotenv.config();
 //connect MongoDB to Node.js Using Mongoose
 mongoose
@@ -48,6 +50,20 @@ mongoose
   .catch((err) => {
      console.log(err);
   })
+app.use(cookieParser());
+app.use(session({
+  secret: 'abcnhds',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 5*60*1000
+  }
+}
+));
+require(__path_configs + 'passport')(passport);
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 
 // view engine setup
@@ -60,11 +76,7 @@ app.use(logger('dev'));
 
 app.use(cookieParser());
 // app.use(helmet());
-app.use(session({
-  secret: 'work hard',
-  resave: false,
-  saveUninitialized: false,
-}));
+
 // parse incoming requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -92,15 +104,15 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
-  if(systemConfig.env == "dev") {
+  if(systemConfig.env == "production") {
     res.status(err.status || 500);
     res.render(__path_views_frontend +  'pages/error', {pageTitle   : 'Page Not Found ' });
   }
 
   // render the error page
-  if(systemConfig.env == "production") {
+  if(systemConfig.env == "dev") {
     res.status(err.status || 500);
-    res.redirect('/error')
+    res.render(__path_views_backend +  'pages/error', { pageTitle   : 'Page Not Found ' });
   }
 });
 

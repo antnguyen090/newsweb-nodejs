@@ -14,5 +14,6 @@ module.exports = {
     folder_views_backend     : 'views/backend',
     folder_model_backend   : 'model/backend',
     folder_public       : 'public',
-    folder_uploads      : 'uploads'
+    folder_uploads      : 'uploads',
+    folder_middleware   : 'middleware'
 };

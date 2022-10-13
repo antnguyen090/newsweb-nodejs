@@ -1,25 +1,57 @@
 <%  
     let arrMenu = [
-        {name: 'Dashboard', icon: 'fa-solid fa-gauge', link: `${systemConfig.prefixAdmin}/dashboard`},
-        {name: 'Category', icon: 'fa-solid fa-list-alt', link: `${systemConfig.prefixAdmin}/category`},
-        {name: 'Article', icon: 'fa-solid fa-newspaper', link: `${systemConfig.prefixAdmin}/article`},
-        {name: 'Menu Bar', icon: 'fa-solid fa-align-justify', link: `${systemConfig.prefixAdmin}/menubar`},
-        {name: 'RSS', icon: 'fa-solid fa-square-rss', link: `${systemConfig.prefixAdmin}/rss`},
-        {name: 'Wheather', icon: 'fa-solid fa-cloud', link: `${systemConfig.prefixAdmin}/wheather`},
-        {name: 'Contact', icon: 'fa-solid fa-envelopes-bulk', link: `${systemConfig.prefixAdmin}/contact`},
-        {name: 'Setting', icon: 'fa-solid fa-images', link: `${systemConfig.prefixAdmin}/setting`},
+        {parent: false, name: 'Dashboard', icon: 'fa-solid fa-gauge', link: `${systemConfig.prefixAdmin}/dashboard`},
+        {parent: false, name: 'Category', icon: 'fa-solid fa-list-alt', link: `${systemConfig.prefixAdmin}/category`},
+        {parent: false, name: 'Article', icon: 'fa-solid fa-newspaper', link: `${systemConfig.prefixAdmin}/article`},
+        {parent: false, name: 'Menu Bar', icon: 'fa-solid fa-align-justify', link: `${systemConfig.prefixAdmin}/menubar`},
+        {parent: false, name: 'RSS', icon: 'fa-solid fa-square-rss', link: `${systemConfig.prefixAdmin}/rss`},
+        {parent: false, name: 'Wheather', icon: 'fa-solid fa-cloud', link: `${systemConfig.prefixAdmin}/wheather`},
+        {parent: false, name: 'Contact', icon: 'fa-solid fa-envelopes-bulk', link: `${systemConfig.prefixAdmin}/contact`},
+        {parent: false, name: 'Setting', icon: 'fa-solid fa-images', link: `${systemConfig.prefixAdmin}/setting`},
+        {parent: true, child: [
+            { name: 'Group', icon: 'fa-solid fa-user-group', link: `managegroup`},
+            { name: 'User', icon: 'fa-solid fa-user', link: `manageuser`},
+        ], name: 'Manage User', icon: 'fa-solid fa-users', link: `/${systemConfig.prefixAdmin}/`},
     ];
     
     let xhtmlMenu = '';
     arrMenu.forEach(menu => {
+      if(menu.parent == false){
         xhtmlMenu += `<li class="nav-item">
-                <a href="/${menu.link}" class="nav-link">
-                  <i class="${menu.icon}" style="margin-right: 10px;"></i>
-                  <p>
-                    ${menu.name}
-                  </p>
-                </a>
-        </li>`;
+                          <a href="/${menu.link}" class="nav-link">
+                            <i class="${menu.icon}" style="margin-right: 10px;"></i>
+                            <p>
+                              ${menu.name}
+                            </p>
+                          </a>
+                     </li>`;
+      } else if(menu.parent == true){
+        let childHtml = ''
+        menu.child.forEach(function(childrenEntry){
+          childHtml+= `
+                      <li class="nav-item">
+                        <a href="${menu.link}${childrenEntry.link}" class="nav-link">
+                          <i class="${childrenEntry.icon}"></i>
+                          <p>${childrenEntry.name}</p>
+                        </a>
+                      </li>
+                      `
+        })
+        xhtmlMenu+=`
+                    <li class="nav-item">
+                      <a href="#" class="nav-link">
+                        <i class="nav-icon ${menu.icon}"></i>
+                        <p>
+                          ${menu.name}
+                          <i class="fas fa-angle-left right"></i>
+                        </p>
+                      </a>
+                      <ul class="nav nav-treeview" style="display: none;">
+                            ${childHtml}
+                      </ul>
+                    </li>
+                `
+      }
     });   
 %>
 

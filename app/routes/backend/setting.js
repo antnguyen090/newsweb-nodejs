@@ -26,6 +26,9 @@ const uploadThumb = FileHelpers.uploadFileSetting([
     name: 'logoSmall'
   }, {
     name: 'logoTitle'
+  },
+	{
+    name: 'logoBanner'
   }
 ], `${mainName}`);
 
@@ -125,7 +128,18 @@ router.post('/save/(:id)?',
 				return Promise.reject(notify.ERROR_FILE_EXTENSION);
 			}
 			return true;
-	}), async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
+	}),
+	body('logoBanner').custom((value, {req}) => {
+		const {image_uploaded_banner, image_old_banner} = req.body;
+		if (!image_uploaded_banner && !image_old_banner) {
+			return Promise.reject(notify.ERROR_FILE_EMPTY);
+		}
+		if (!req.files.logoBanner && image_uploaded_banner) {
+			return Promise.reject(notify.ERROR_FILE_EXTENSION);
+		}
+		return true;
+	})
+	, async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
   try {
     let settingObj = await schemaSetting.findOne({})
     let settingData = JSON.parse(settingObj.setting)

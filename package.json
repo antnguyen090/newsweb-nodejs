@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "admin-lte": "3.2",
+    "bcrypt": "^5.0.1",
     "blueimp-file-upload": "^10.32.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -30,6 +31,8 @@
     "new-date": "^1.0.3",
     "node-fetch": "^3.2.10",
     "nodemailer": "^6.7.8",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
     "randomstring": "^1.2.2",
     "req-flash": "^0.0.3",
     "rss-parser": "^3.12.0"

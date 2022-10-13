@@ -9,6 +9,8 @@ router.use('/rss', require('./rss'));
 router.use('/setting', require('./setting'));
 router.use('/wheather', require('./wheather'));
 router.use('/contact', require('./contact'));
+router.use('/manageuser', require('./manageuser'));
+router.use('/managegroup', require('./managegroup'));
 router.use('/', require('./dashboard'));
 
 module.exports = router;

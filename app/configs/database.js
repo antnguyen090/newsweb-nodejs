@@ -12,4 +12,6 @@ module.exports = {
     col_rss: 'rss',
     col_setting:"setting",
     col_wheather:"wheather",
+    col_manageuser: 'manageuser',
+    col_managegroup: 'managegroup',
 };
