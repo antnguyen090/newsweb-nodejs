@@ -301,7 +301,6 @@ router.post('/changecategory',
 		body('id')
 				.custom(async (val, {req}) => {
 				return await schemaArticle.findOne({_id: val}).then(async user => {
-					console.log(user)
 					if (!user) {
 						return Promise.reject(notify.ERROR_NOT_EXITS)
 					}
@@ -327,19 +326,8 @@ router.post('/changecategory',
 			}
 	} catch (error) {
 		console.log(error)
+		res.send({success: false})
 	}
-		// try {
-		// 	const errors = validationResult(req);
-		// 	if (! errors.isEmpty()) {
-		// 		res.send({success: false, errors: errors})
-		// 		return
-		// 	}
-		// 	let {newParent, id} = req.body
-		// 	let changeStatus = await modelMenuBar.changeParent(id, newParent)
-		// 	res.send({success: true})
-		// } catch (error) {
-		// 	console.log(error)
-		// }
 });
 
 module.exports = router;

@@ -404,7 +404,7 @@ $( document ).ready( async function() {
         let newCategory = $(this).find(":selected").val()
         $.ajax({
             type: "post",
-            url: `article/changecategory`,
+            url: `/${linkAdmin}article/changecategory`,
             data: `id=${id}&newCategory=${newCategory}`,
             dataType: "json",
             success: function (response) {
