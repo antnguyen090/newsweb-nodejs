@@ -7,7 +7,7 @@ module.exports = {
     saveItems: async (params) =>{
         let data = await schemaArticle(params).save(async function(err,room) {
             let articleArr = await schemaCategory.findById({_id: room.category})
-            articleArr.articles.push(room)
+            await articleArr.articles.push(room)
             await schemaCategory(articleArr).save()
          })
         return 
@@ -26,7 +26,7 @@ module.exports = {
     deleteItem: async (id) =>{
         let removeObject = await schemaArticle.findOne({_id: id}).then( async (obj)=>{
             let articleArr = await schemaCategory.findById({_id: obj.category})
-            articleArr.articles.remove(id)
+            await articleArr.articles.remove(id)
             await schemaCategory(articleArr).save()
             let data = await schemaArticle.deleteOne({_id: id})
         })
@@ -36,7 +36,7 @@ module.exports = {
         await Promise.all(arrId.map(async (id,index) => {
             let removeObject = await schemaArticle.findOne({_id: id}).then( async (obj)=>{
             let articleArr = await schemaCategory.findById({_id: obj.category})
-            articleArr.articles.remove(id)
+            await articleArr.articles.remove(id)
             await schemaCategory(articleArr).save()
             let data = await schemaArticle.deleteOne({_id: id})
             })
@@ -74,13 +74,13 @@ module.exports = {
         return
     },
     changeCategory: async (id, newCategory) =>{
-        let updateOldCategory = schemaArticle.findOne({_id: id}).then(async item=>{
+        let updateOldCategory = await schemaArticle.findOne({_id: id}).then(async item=>{
             await schemaCategory.findOne({_id: item.category}).then( async oldItem=>{
-                oldItem.articles.remove(id)
+                await oldItem.articles.remove(id)
                 await schemaCategory(oldItem).save()
             })
             await schemaCategory.findOne({_id: newCategory}).then( async newItem=>{
-                newItem.articles.push(id)
+                await newItem.articles.push(id)
                 await schemaCategory(newItem).save()
             })
         })
@@ -92,30 +92,30 @@ module.exports = {
             { $match: { status: 'active' }},
         ]); 
     },
-    clearall: async ()=>{
-       await schemaCategory.updateMany({ status : 'active'}, { articles: [] });
-       return
-    },
-    findall: async ()=>{
-        let data = await schemaArticle.find({})
-        let arr  = []
-        await Promise.all(data.map(async (obj,index) => {
-                // let articleArr = await schemaCategory.findOne({_id: obj.categoryId})
-                // await articleArr.articles.push(obj)
-                // let dataa = await schemaCategory(articleArr).save()
-                // return dataa
-                if(obj.categoryId === '632976b66095a9135928f897'){
-                    arr.push(obj.id)
-                }
-             }))
-            .catch((error) => {
-                console.error(error)
-                return Promise.reject()
-            });
-            console.log(arr)
-        let save = await schemaCategory.updateOne({_id: '632976b66095a9135928f897'},{articles: arr})
-        return arr
-    }
+    // clearall: async ()=>{
+    //    await schemaCategory.updateMany({ status : 'active'}, { articles: [] });
+    //    return
+    // },
+    // findall: async ()=>{
+    //     let data = await schemaArticle.find({})
+    //     let arr  = []
+    //     await Promise.all(data.map(async (obj,index) => {
+    //             // let articleArr = await schemaCategory.findOne({_id: obj.categoryId})
+    //             // await articleArr.articles.push(obj)
+    //             // let dataa = await schemaCategory(articleArr).save()
+    //             // return dataa
+    //             if(obj.categoryId === '632976b66095a9135928f897'){
+    //                 arr.push(obj.id)
+    //             }
+    //          }))
+    //         .catch((error) => {
+    //             console.error(error)
+    //             return Promise.reject()
+    //         });
+    //         console.log(arr)
+    //     let save = await schemaCategory.updateOne({_id: '632976b66095a9135928f897'},{articles: arr})
+    //     return arr
+    // }
 }
 
 

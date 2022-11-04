@@ -2,6 +2,7 @@ const mainName = "contact"
 const schemaContact 	= require(__path_schemas_backend + mainName);
 const nodemailer = require("nodemailer");
 const dotenv = require("dotenv");
+const { getForDashboard } = require("./category");
 
 module.exports = {
     saveItems: async (params) =>{
@@ -90,6 +91,10 @@ module.exports = {
         // Preview only available when sending through an Ethereal account
         console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
         // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+      },
+      getForDashboard : async ()=>{
+        let data = await schemaContact.count({})
+        return data
       }
 }
 

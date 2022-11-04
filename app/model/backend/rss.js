@@ -47,6 +47,10 @@ module.exports = {
         let data = await schemaRSS.updateOne({_id: id}, item)
         return
     },
+      getForDashboard : async ()=>{
+        let data = await schemaRSS.count({})
+        return data
+      }
 }
 
 

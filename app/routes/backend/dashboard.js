@@ -4,13 +4,18 @@ var util = require('util')
 const mainName = "dashboard"
 const pageTitle = `Dashboard Management`
 const folderView = __path_views_backend + `/pages/${mainName}/`;
-const schemaCategory = require(__path_schemas_backend + 'category');
-const schemaArticle = require(__path_schemas_backend + 'article');
 const layout = __path_views_backend + 'backend';
+const modelCategory = require(__path_model_backend + 'category');
+const modelContact = require(__path_model_backend + 'contact');
+const modelRss = require(__path_model_backend + 'rss');
+
 
 
 router.get('/', async function(req, res, next) {
-  let category = await schemaCategory.find().select('articles')
+  let category = await modelCategory.getForDashboard()
+  let contactCount = await modelContact.getForDashboard()
+  let rssCount = await modelRss.getForDashboard()
+
   let categoryCount = category.length
   let articleCount = category
                           .map((item)=>{
@@ -28,7 +33,18 @@ router.get('/', async function(req, res, next) {
     name: "Article",
     count: articleCount,
     slug: "article",
-  }]
+  },
+  {
+    name: "Contact",
+    count: contactCount,
+    slug: "contact",
+  },
+  {
+    name: "RSS",
+    count: rssCount,
+    slug: "rss",
+  }
+]
   res.render(`${folderView}index`, {
     pageTitle,
     category,

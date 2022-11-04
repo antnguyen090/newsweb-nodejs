@@ -1,8 +1,13 @@
 <% 
     showDashboardNews = (collection) =>{
+        let iconData = {Contact: 'email',
+                    Article: 'document',
+                    Category: 'information',
+                    RSS:      'social-rss'
+        }
         let html =''
         collection.forEach((obj)=>{
-            let icon = (obj.name == 'Category') ? 'information' : 'document'
+            let icon = iconData[obj.name]
             html +=` <div class="col-lg-3 col-6">
                         <div class="small-box bg-info">
                             <div class="inner">
