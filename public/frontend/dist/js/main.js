@@ -102,31 +102,34 @@
         $(window).resize(toggleNavbarMethod);
 
         $("#sendMail").submit(function(e) {
+            toastr.options = {
+                "closeButton": false,
+                "debug": false,
+                "newestOnTop": false,
+                "progressBar": false,
+                "positionClass": "toast-top-center",
+                "preventDuplicates": false,
+                "onclick": null,
+                "showDuration": "300",
+                "hideDuration": "1000",
+                "timeOut": "5000",
+                "extendedTimeOut": "1000",
+                "showEasing": "swing",
+                "hideEasing": "linear",
+                "showMethod": "fadeIn",
+                "hideMethod": "fadeOut"
+              }
             let urlPath = window.location.pathname.split("/")[1]
             e.preventDefault(); // avoid to execute the actual submit of the form.
             var form = $("#sendMail").serialize();
+            $("#sendMail button[type='submit']").addClass('disabled').attr('disabled','')
+            toastr["info"]("Đang gửi xin vui lòng đợi!")
             $.ajax({
                 type: "POST",
                 url: `/${urlPath}/sendmail`,
                 data: form, // serializes the form's elements.
                 success: function (response) {
-                    toastr.options = {
-                        "closeButton": false,
-                        "debug": false,
-                        "newestOnTop": false,
-                        "progressBar": false,
-                        "positionClass": "toast-top-center",
-                        "preventDuplicates": false,
-                        "onclick": null,
-                        "showDuration": "300",
-                        "hideDuration": "1000",
-                        "timeOut": "5000",
-                        "extendedTimeOut": "1000",
-                        "showEasing": "swing",
-                        "hideEasing": "linear",
-                        "showMethod": "fadeIn",
-                        "hideMethod": "fadeOut"
-                      }
+                    toastr.clear()
                     if(response.success == true){
                         toastr["success"]("Đã gửi thông tin thành công")
                         $("#sendMail input").val("")
@@ -134,6 +137,7 @@
                     } else {
                         toastr["error"]("Đã có lỗi, vui lòng thử lại!")
                     }
+                    $("#sendMail button[type='submit']").removeClass('disabled').removeAttr('disabled')
                 }
             });
             
@@ -280,6 +284,8 @@
             }
         }
     });
+
+
     
 })(jQuery);
 

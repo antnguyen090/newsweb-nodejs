@@ -88,6 +88,7 @@ router.get('/form/(:id)?', async function (req, res, next) {
 					let item = await modelArticle.getItemByID(req.params.id)
 					//document exists });
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: item[0],
 						layout,
@@ -98,6 +99,7 @@ router.get('/form/(:id)?', async function (req, res, next) {
 			});   
 			} else {
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: [],
 						layout,
@@ -197,6 +199,7 @@ router.post('/save/(:id)?',
 				if(req.file != undefined) FileHelpers.remove(`public/uploads/${mainName}/`, req.file.filename); // xóa tấm hình khi form không hợp lệ
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
+							pageTitle,
 							main: main,
 							item: itemData[0],
 							id: req.params.id,
@@ -204,6 +207,7 @@ router.post('/save/(:id)?',
 						})
 				} else {
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: req.body,
 						layout,

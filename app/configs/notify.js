@@ -1,10 +1,5 @@
 
 module.exports = {
-    CHANGE_STATUS_SUCCESS: 'Cập nhật status thành công',
-    CHANGE_STATUS_MULTI_SUCCESS: 'Có %d phần tử được cập nhật status thành công',
-    CHANGE_ORDERING_SUCCESS: 'Cập nhật ordering thành công',
-    DELETE_SUCCESS: 'Xóa phần tử thành công',
-    DELETE_MULTI_SUCCESS: 'Có %d phần tử được xóa thành công',
     ADD_SUCCESS: 'Add Successfully',
     EDIT_SUCCESS: 'Edit  Successfully',
     ERROR_NAME: 'Name length must be number from %d to %d',
@@ -38,8 +33,10 @@ module.exports = {
     ERROR_RSS_URL:"Input link wrong",
     ERROR_SUBJECT: 'Subject must be non-empty',
     ERROR_API_EMPTY: 'API must be non-empty',
-    ERROR_EMAIL: "Please input Email",
+    ERROR_EMAIL: "Please input right Email",
+    ERROR_PASSWORD: "Please input Password text from %d to %d",
     ERROR_MESSAGE: "Please input Message",
     SUCCESS_SETTING_SAVE: 'Save Setting Successfully',
-    ERROR_NOT_EXITS: 'Not Exits'
+    ERROR_NOT_EXITS: 'Not Exits',
+    ERROR_LOGIN_USER: "Incorrect username or password."
 };

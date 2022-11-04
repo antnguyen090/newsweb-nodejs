@@ -10048,7 +10048,7 @@ h6,
   border-color: #888;
 }
 
-.login input[type="submit"] {
+.login .submitForm{
   background: #ffcc00;
   border-color: transparent;
   color: #31404B ;
@@ -10056,14 +10056,26 @@ h6,
   font-weight: 600;
 }
 
-.login input[type="submit"]:hover {
+.login input.submitForm:hover {
   opacity: .8;
 }
 
 /* Buttons' focus effect */
-.login input[type="submit"]:focus {
+.login input.submitForm:focus {
   border-color: #05a;
 }
 
+.error-mess{
+  color: red;
+  display: block;
+}
 
+.success-mess{
+  color: green;
+  display: block;
+}
 
+.login input.submitForm.disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}

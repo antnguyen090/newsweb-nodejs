@@ -1,5 +1,4 @@
 <%- include('./../../helpers/showCategoryForm'); -%>
-<%- include('./../../helpers/showoptionbox'); -%>
 <%- include('./../../helpers/showerror'); -%>
 
 <% 
@@ -19,10 +18,10 @@
                     <input type="text" id="name-input-form" name="name" value="<%= item.name %>" class="form-control form-control-sm"></div>
                 </div>
                 <div class="form-group row">
-                    <label for="categoryId" class="col-sm-2 col-form-label text-sm-right required">Category</label>
+                    <label for="categoryId" class="col-sm-2 col-form-label text-sm-right required">Group</label>
                     <div class="col-xs-12 col-sm-8">
                         <select name="group" id="input-category" class="form-control form-control-sm">
-                            <%- showCategoryList(main.categoryList) %>
+                            <%- showCategoryList(main.groupList) %>
                         </select>
                     </div>
                 </div>
@@ -48,12 +47,6 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="option" class="col-sm-2 col-form-label text-sm-right required">Option</label>
-                                <div class="col-xs-12 col-sm-8">
-									<%- showOptionBox(item.id, item.slider, item.toppost, item.breakingnews, item.fearture)  %>
-                                </div>
-                            </div>
                             <div class="form-group row uploadImage">
                                 <label for="thumb" class="col-sm-2 col-form-label text-sm-right">Upload Image</label>
                                 <div class="col-xs-12 col-sm-8">
@@ -70,7 +63,8 @@
                             </div>
                             <div class="form-group row ckeditor">
                                 <label for="description" class="col-sm-2 col-form-label text-sm-right">Description</label>
-                                <textarea id="summernote" name="editordata">
+                                <textarea id="summernote" name="description">
+
                                 </textarea>
                             </div>
 
@@ -95,7 +89,7 @@
 <!-- Summernote -->
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote.min.js"></script>        
 <script>
-        var editorData = `<%- item.editordata %>`;
+        var editorData = `<%- item.description %>`;
         $('#summernote').summernote('code', editorData);
         ImageMediasArticle.onchange = evt => {
 			const [file] = ImageMediasArticle.files

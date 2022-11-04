@@ -73,6 +73,7 @@ router.get('/form/(:id)?',  function (req, res, next) {
 				let item = await modelContact.getItemByID(req.params.id)
 				//document exists });
 				res.render(`${folderView}form`, {
+					pageTitle,
 					main: main,
 					item: item[0],
 					layout,
@@ -83,6 +84,7 @@ router.get('/form/(:id)?',  function (req, res, next) {
 		});   
     } else {
         res.render(`${folderView}form`, {
+					pageTitle,
 			main: main,
 			item: [],
 			layout,
@@ -113,7 +115,6 @@ router.post('/save/(:id)?',
 		.isEmail()
 		.withMessage(notify.ERROR_MESSAGE),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
-			console.log(req.body)
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
@@ -126,6 +127,7 @@ router.post('/save/(:id)?',
 							}
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
+							pageTitle,
 							main: main,
 							item: itemData[0],
 							id: req.params.id,
@@ -133,6 +135,7 @@ router.post('/save/(:id)?',
 						})
 				} else {
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: req.body,
 						layout,

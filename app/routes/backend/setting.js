@@ -46,6 +46,7 @@ router.get('/', async function (req, res, next) {
 				}
 				if (settingObj.id != undefined) { // document exists });
 							res.render(`${folderView}form`, {
+								pageTitle,
 								main: main,
 								settingObj,
 								item: JSON.parse(settingObj.setting),
@@ -53,6 +54,7 @@ router.get('/', async function (req, res, next) {
 							});
 					} else {
 						res.render(`${folderView}form`, {
+							pageTitle,
 							main: main,
 							item: [],
 							layout
@@ -148,6 +150,7 @@ router.post('/save/(:id)?',
 		item.logosmall = (settingData.logosmall!=undefined) ? settingData.logosmall : undefined
 		item.logolarge = (settingData.logolarge!=undefined) ? settingData.logolarge : undefined
 		item.logotitle = (settingData.logotitle!=undefined) ? settingData.logotitle : undefined
+		item.logobanner = (settingData.logobanner!=undefined) ? settingData.logobanner : undefined
     if (! errors.isEmpty()) {
       let main = {
         pageTitle: pageTitle,
@@ -159,6 +162,7 @@ router.post('/save/(:id)?',
         }
       }
       res.render(`${folderView}form`, {
+				pageTitle,
         main: main,
         settingObj,
         item: settingData,

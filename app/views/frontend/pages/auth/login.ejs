@@ -1,3 +1,33 @@
+<%
+    let checkObject = (arr) => {
+
+    // check if arr is array
+    let result = Array.isArray(arr);
+
+    if(result) {
+        return true
+    }
+    return false
+  }
+
+  let showError = (data) =>{
+    if(!data) return
+    let html = ''
+    if(checkObject(data)){
+      data.forEach(item=>{
+        html += `<span class="error-mess">${item.msg}</span>`
+      })
+      return html
+    }
+    html = `<span class="error-mess">${data.error}</span>`
+    return html
+  }
+  let showSuccess = (data) =>{
+    if(!data) return
+    let html = `<span class="success-mess">${data.success}</span>`
+    return html
+  }
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,11 +41,23 @@
   <div class="login">
     <div class="login-triangle"></div>
     <h2 class="login-header">Log in Admin Management</h2>
-    <form action="/auth/login" method="post" class="login-container">
-      <p><input type="email" name="email" placeholder="Email"></p>
-      <p><input type="password" name="password" placeholder="Password"></p>
-      <p><input type="submit" value="Log in"></p>
+    <form id='form' action="/auth/login" method="post" class="login-container">
+      <%- showError(errors) %>
+      <%- showSuccess(success) %>
+      <p><input type="email" name="username" placeholder="Email" required></p>
+      <p><input type="password" name="password" placeholder="Password" required></p>
+      <p><a href="/auth/forgotpassword">Forgot Password?</a></p>
+      <p><input type="submit" class="submitForm" value="Log in"></p>
     </form>
   </div>
 </body>
 </html>
+<script type="text/javascript">
+
+  let form = document.getElementById('form')
+  form.addEventListener('submit', (event) => {
+    let inputSubmit = document.querySelectorAll('input[type=submit]')[0]
+    inputSubmit.setAttribute("disabled", "")
+    inputSubmit.classList.add("disabled");
+  })
+</script>

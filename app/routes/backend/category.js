@@ -76,6 +76,7 @@ router.get('/form/(:id)?',  function (req, res, next) {
 						main: main,
 						item: item[0],
 						layout,
+						pageTitle
 					});
 				} else {
 					res.redirect(linkIndex);
@@ -85,7 +86,8 @@ router.get('/form/(:id)?',  function (req, res, next) {
 					res.render(`${folderView}form`, {
 				main: main,
 				item: [],
-				layout
+				layout,
+				pageTitle
 					});
 			}
 	} catch (error) {

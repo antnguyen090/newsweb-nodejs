@@ -9,7 +9,7 @@ const schemaArticle = require(__path_schemas_backend + 'article');
 const layout = __path_views_backend + 'backend';
 
 
-router.get('/(:status)?', async function(req, res, next) {
+router.get('/', async function(req, res, next) {
   let category = await schemaCategory.find().select('articles')
   let categoryCount = category.length
   let articleCount = category

@@ -78,9 +78,9 @@ router.post('(/option)', async (req, res, next) => {
 router.get('/form/(:id)?', async function (req, res, next) {
 	try {
 		let inform = req.flash()
-		let category = await schemaGroup.find({status:'active'})
+		let group = await schemaGroup.find({status:'active'})
 		let main = {pageTitle: pageTitle,
-								categoryList: category,
+								groupList: group,
 								inform: inform
 								}
 		if (req.params.id != undefined) {
@@ -89,6 +89,7 @@ router.get('/form/(:id)?', async function (req, res, next) {
 					let item = await modelUser.getItemByID(req.params.id)
 					//document exists });
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: item[0],
 						layout,
@@ -99,6 +100,7 @@ router.get('/form/(:id)?', async function (req, res, next) {
 			});   
 			} else {
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: [],
 						layout,
@@ -146,7 +148,7 @@ router.post('/save/(:id)?',
 				}
 				return
 	})}),
-	body('editordata')
+	body('description')
 		.not()
 		.isEmpty()
 		.withMessage(notify.ERROR_DESCRIPTION),
@@ -179,7 +181,6 @@ router.post('/save/(:id)?',
 	}),
 	async function (req, res) { // Finds the validation errors in this request and wraps them in an object with handy functions
 		try {
-			console.log( req.body)
 			let item = req.body;
 			let itemData = [{}]
 			if(req.params.id != undefined){
@@ -187,14 +188,15 @@ router.post('/save/(:id)?',
 			}
 			let errors = validationResult(req)
 			if(!errors.isEmpty()) {
-				let category = await schemaGroup.find({status:'active'})
+				let group = await schemaGroup.find({status:'active'})
 				let main = {pageTitle: pageTitle,
 							showError: errors.errors,
-							categoryList: category,
+							groupList: group,
 						}
 				if(req.file != undefined) FileHelpers.remove(`public/uploads/${mainName}/`, req.file.filename); // xóa tấm hình khi form không hợp lệ
 				if (req.params.id !== undefined){
 						res.render(`${folderView}form`, {
+							pageTitle,
 							main: main,
 							item: itemData[0],
 							id: req.params.id,
@@ -202,6 +204,7 @@ router.post('/save/(:id)?',
 						})
 				} else {
 					res.render(`${folderView}form`, {
+						pageTitle,
 						main: main,
 						item: req.body,
 						layout,

@@ -14,7 +14,7 @@ const dotenv = require("dotenv");
 const  mongoose = require('mongoose');
 const expressLayouts = require('express-ejs-layouts');
 const pathConfig = require('./path');
-const { Dropzone } = require("dropzone");
+const app = express();
 
 
 // Define Path
@@ -40,8 +40,9 @@ global.__path_public      = __base + pathConfig.folder_public + '/';
 global.__path_uploads     = __path_public + pathConfig.folder_uploads + '/';
 const systemConfig = require(__path_configs + 'system');
 const layoutFrontEnd	     = __path_views_frontend + 'frontend';
+const layoutBackEnd	     = __path_views_backend + 'backend';
 
-var app = express();
+
 dotenv.config();
 //connect MongoDB to Node.js Using Mongoose
 mongoose
@@ -56,16 +57,20 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 5*60*1000
+    maxAge: 5*60*10000
   }
 }
 ));
+
 require(__path_configs + 'passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-
-
+app.use(flash());
+ app.use(function(req, res, next) {
+  res.locals.messages = req.flash();
+  next();
+});
 // view engine setup
 app.set('views', path.join(__dirname, 'app/views/frontend'));
 app.set('view engine', 'ejs');
@@ -74,8 +79,7 @@ app.set('layout', __path_views_frontend + '/frontend');
 
 app.use(logger('dev'));
 
-app.use(cookieParser());
-// app.use(helmet());
+
 
 // parse incoming requests
 app.use(express.json());
@@ -106,13 +110,13 @@ app.use(function(err, req, res, next) {
   // render the error page
   if(systemConfig.env == "production") {
     res.status(err.status || 500);
-    res.render(__path_views_frontend +  'pages/error', {pageTitle   : 'Page Not Found ' });
+    res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
   }
 
   // render the error page
   if(systemConfig.env == "dev") {
     res.status(err.status || 500);
-    res.render(__path_views_backend +  'pages/error', { pageTitle   : 'Page Not Found ' });
+    res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
   }
 });
 
