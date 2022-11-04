@@ -1,7 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
-router.use('/', require('./home'));
+const middleGetRandomArticle = require(__path_middleware + 'get-random-article');
+
+router.use('/',middleGetRandomArticle,require('./home'));
 router.use('/auth', require('./auth'));
 router.use('/index', require('./home'));
 router.use('/category', require('./category'));

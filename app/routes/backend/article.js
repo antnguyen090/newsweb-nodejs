@@ -334,4 +334,21 @@ router.post('/changecategory',
 	}
 });
 
+router.get('/alltest', async (req,res,next)=>{
+				try {
+					let changeStatus = await modelArticle.findall()
+					res.send({success: true})
+				} catch (error) {
+					console.log(error)
+				}
+			})
+// router.get('/clearall', async (req,res,next)=>{
+// 				try {
+// 					let changeStatus = await modelArticle.clearall()
+// 					res.send({success: true})
+// 				} catch (error) {
+// 					console.log(error)
+// 				}
+// 			})
+
 module.exports = router;

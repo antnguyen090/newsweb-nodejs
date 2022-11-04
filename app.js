@@ -111,13 +111,15 @@ app.use(function(err, req, res, next) {
   // render the error page
   if(systemConfig.env == "production") {
     res.status(err.status || 500);
-    res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
+    res.redirect('/error')
+    // res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
   }
 
   // render the error page
   if(systemConfig.env == "dev") {
     res.status(err.status || 500);
-    res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
+    res.redirect('/error')
+    // res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
   }
 });
 

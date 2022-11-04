@@ -24,7 +24,7 @@ const coinPriceHelpers = require(__path_helpers + 'getcoin');
 router.get('/', async function(req, res, next) {
     try {
         let limitArticleHome = 20
-        let limitArticle     = 18
+        let limitArticle     = 60
         let delay = 600000;
         let settingData = await schemaSetting.findOne({})
         let coinPrice     = await coinPriceHelpers.getCoinPrice()
