@@ -47,10 +47,6 @@ module.exports = {
         let data = await schemaCategory.updateOne({_id: id}, item)
         return
     },
-    changePrice: async (id, price) =>{
-        let data = await schemaCategory.updateOne({_id: id}, {price: price})
-        return
-    },
     getForDashboard: async ()=>{
         let data = await schemaCategory.find().select('articles')
         return data

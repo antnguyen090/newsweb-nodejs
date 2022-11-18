@@ -27,19 +27,15 @@ module.exports = {
         let removeObject = await schemaArticle.findOne({_id: id}).then( async (obj)=>{
             let articleArr = await schemaCategory.findById({_id: obj.category})
             await articleArr.articles.remove(id)
-            await schemaCategory(articleArr).save()
+            let update  = await schemaCategory.findOneAndUpdate({_id: obj.category}, articleArr)
             let data = await schemaArticle.deleteOne({_id: id})
         })
         return
     },
     deleteItemsMulti: async (arrId) =>{
         await Promise.all(arrId.map(async (id,index) => {
-            let removeObject = await schemaArticle.findOne({_id: id}).then( async (obj)=>{
-            let articleArr = await schemaCategory.findById({_id: obj.category})
-            await articleArr.articles.remove(id)
-            await schemaCategory(articleArr).save()
-            let data = await schemaArticle.deleteOne({_id: id})
-            })
+            let data = await module.exports.deleteItem(id)
+            return data
              }))
             .catch((error) => {
                 console.error(error.message)
