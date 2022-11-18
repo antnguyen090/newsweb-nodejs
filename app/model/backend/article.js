@@ -25,9 +25,8 @@ module.exports = {
     },
     deleteItem: async (id) =>{
         let removeObject = await schemaArticle.findOne({_id: id}).then( async (obj)=>{
-            let articleArr = await schemaCategory.findById({_id: obj.category})
-            await articleArr.articles.remove(id)
-            let update  = await schemaCategory.findOneAndUpdate({_id: obj.category}, articleArr)
+            let update  = await schemaCategory.updateOne({_id: obj.category},
+                {$pull: {articles: id}})
             let data = await schemaArticle.deleteOne({_id: id})
         })
         return
