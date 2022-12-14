@@ -64,7 +64,6 @@ router.get('/', async function(req, res, next) {
         dataWheather,
         coinPrice,
      });
-     res.statusCode = 200;
     } catch (error) {
         console.log(error)
     }

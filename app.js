@@ -110,7 +110,7 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
-  res.redirect('/error')
+  res.redirect("/trang-loi")
 });
 
 module.exports = app;
