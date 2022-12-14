@@ -45,6 +45,7 @@ const layoutBackEnd	     = __path_views_backend + 'backend';
 
 dotenv.config();
 //connect MongoDB to Node.js Using Mongoose
+mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.MONGO_URL)
   .then( () => console.log("Database connect successfully"))
