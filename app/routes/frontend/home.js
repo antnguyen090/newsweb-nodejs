@@ -63,7 +63,8 @@ router.get('/', async function(req, res, next) {
         settingData,
         dataWheather,
         coinPrice,
-     });        
+     });    
+     return    
     } catch (error) {
         console.log(error)
     }
