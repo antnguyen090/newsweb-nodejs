@@ -5,7 +5,6 @@ const middleGetRandomArticle = require(__path_middleware + 'get-random-article')
 
 router.use('/',middleGetRandomArticle,require('./home'));
 router.use('/auth', require('./auth'));
-router.use('/index', require('./home'));
 router.use('/category', require('./category'));
 router.use('/contact', require('./contact'));
 router.use('/single', require('./single'));

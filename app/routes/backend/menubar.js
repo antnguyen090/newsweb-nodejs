@@ -114,23 +114,6 @@ router.post('/save/(:id)?',
 				}
 				return
 		})}),
-	body('slug')
-		.isSlug()
-		.withMessage(notify.ERROR_SLUG)
-		.custom(async (val, {req}) => {
-			let paramId = (req.params.id != undefined) ? req.params.id : 0
-			return await schemaMenuBar.find({slug: val}).then(async user => {
-				let length = user.length
-				user.forEach((value, index) => {
-					if (value.id == paramId) 
-						length = length - 1;
-					
-				})
-				if (length > 0) {
-					return Promise.reject(notify.ERROR_SLUG_DUPLICATED)
-				}
-				return
-	})}),
 	body('ordering')
 		.isInt({min: 0, max: 99})
 		.withMessage(util.format(notify.ERROR_ORDERING,0,99)),
