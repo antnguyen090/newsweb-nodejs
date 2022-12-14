@@ -23,6 +23,7 @@ const coinPriceHelpers = require(__path_helpers + 'getcoin');
 /* GET home page. */
 router.get('/', async function(req, res, next) {
     try {
+        console.log("render")
         let limitArticleHome = 20
         let limitArticle     = 60
         let delay = 600000;
@@ -64,7 +65,6 @@ router.get('/', async function(req, res, next) {
         dataWheather,
         coinPrice,
      });    
-     return    
     } catch (error) {
         console.log(error)
     }
