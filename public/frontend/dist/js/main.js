@@ -75,11 +75,7 @@
     let showTitlePage = () =>{
         let urlPath = window.location.pathname.split("/")[1]
         let titlePage = document.title
-        if (urlPath==''){
-            urlPath='index'
-        }
         let text = $(`nav.navbar a[href='/${urlPath}']`).text()
-        if(text == '') text = 'Trang Lỗi'
         let textPage  = titlePage + " | " + text
         $(document).attr("title", textPage) 
         $(`nav.navbar a[href='/${urlPath}']`).addClass('active')

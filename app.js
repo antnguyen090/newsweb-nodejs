@@ -110,18 +110,8 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   // render the error page
-  if(systemConfig.env == "production") {
-    res.status(err.status || 500);
-    res.redirect('/error')
-    // res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
-  }
-
-  // render the error page
-  if(systemConfig.env == "dev") {
-    res.status(err.status || 500);
-    res.redirect('/error')
-    // res.render(__path_views_backend +  'pages/error', {layout: layoutBackEnd , pageTitle   : 'Page Not Found ' });
-  }
+  res.status(err.status || 500);
+  res.redirect('/error')
 });
 
 module.exports = app;
