@@ -41,7 +41,7 @@ global.__path_uploads     = __path_public + pathConfig.folder_uploads + '/';
 const systemConfig = require(__path_configs + 'system');
 const layoutFrontEnd	     = __path_views_frontend + 'frontend';
 const layoutBackEnd	     = __path_views_backend + 'backend';
-
+const middleGetRandomArticle = require(__path_middleware + 'get-random-article');
 
 dotenv.config();
 //connect MongoDB to Node.js Using Mongoose
@@ -97,7 +97,7 @@ app.use(logger(':method :url :status - :date[web]', { skip: function (req, res) 
 // Local variable >>> ejs called
 app.locals.systemConfig = systemConfig;
 // Setup router
-app.use('/', require(__path_routers_frontend + '/index'));
+app.use('/', middleGetRandomArticle, require(__path_routers_frontend + '/index'));
 app.use(`/${systemConfig.prefixAdmin}`, require(__path_routers_backend + '/index'));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
